@@ -8,13 +8,32 @@ const animationFrame = new AnimationFrame(20);
 
 const drawCoords = Coords.from([5, 5]);
 
-const RIGHTS = [0,1,2];
-const UP = [2,3,4];
-const LEFT = [4,5,6];
-const DOWN = [6,7,8];
+// const RIGHTS: number[] = [7,0,1,2];
+// const UP:     number[] = [1,2,3,4];
+// const LEFT:   number[] = [3,4,5,6];
+// const DOWN:   number[] = [5,6,7,0];
+const RIGHTS: number[] = [0,1];
+const UP:     number[] = [2,3];
+const LEFT:   number[] = [4,5];
+const DOWN:   number[] = [6,7];
+
+/*
+ 
+  654
+  7 3
+  012
+
+
+   5
+  6 4
+ 7   3
+  0 2
+   1
+
+*/
 
 const numberToCoords = (num: number) => {
-  const n = num % 9;
+  const n = num % 8;
   const coords = Coords.from([0, 0]);
 
   if (RIGHTS.includes(n)) {
