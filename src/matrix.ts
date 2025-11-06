@@ -11,19 +11,24 @@ export class Matrix {
   }
 
   private _value: string[][];
+  private _height: number;
+  private _width: number;
 
   public constructor(
-    private _height: number,
-    private _width: number,
+    height: number,
+    width: number,
     public readonly fill: string = "#",
   ) {
-    if (_height <= 0) {
+    if (height <= 0) {
       throw new Error(NOT_POSITIVE_VALUE_ERROR);
     }
 
-    if (_width <= 0) {
+    if (width <= 0) {
       throw new Error(NOT_POSITIVE_VALUE_ERROR);
     }
+
+    this._height = height;
+    this._width = width;
 
     this._value = this.toArray();
   }
@@ -39,13 +44,24 @@ export class Matrix {
   }
 
   public at(coords: Coords) {
-    const { x, y } = Matrix.resolveCoords(coords);
+    const { x, y } = coords;
     return this._value[y][x];
   }
 
   public draw(coords: Coords, fill: string) {
-    const { x, y } = Matrix.resolveCoords(coords);
+    const { x, y } = coords;
+    
+    if (this.isOutOfBounds(coords)) {
+      return this;
+    };
+
     this._value[y][x] = fill;
+    return this;
+  }
+
+  public drawMany(coords: Coords[], fill: string) {
+    coords.forEach(value => this.draw(value, fill));
+    return this;
   }
 
   public move(vector2: Vector2) {
@@ -57,12 +73,68 @@ export class Matrix {
     return vector2.end;
   };
 
+  public isOutOfBoundsWithPositions(coords: Coords) {
+    const { x, y } = coords;
+
+    const xOutOfBounds = x < 0 || this._width <= x;
+    const yOutOfBounds = y < 0 || this._height <= y;
+
+    return {
+      xOutOfBounds,
+      yOutOfBounds
+    };
+  }
+
+  public isOutOfBounds(coords: Coords): boolean {
+    const { xOutOfBounds, yOutOfBounds } = this.isOutOfBoundsWithPositions(coords);
+
+    return xOutOfBounds || yOutOfBounds;
+  };
+
+  public getTeleportPosition(coords: Coords): false | Coords {
+    const { xOutOfBounds, yOutOfBounds } = this.isOutOfBoundsWithPositions(coords);
+    
+    if (!xOutOfBounds && !yOutOfBounds) {
+      return false;
+    }
+
+    const x = coords.x < 0
+      ? this._width-1
+      : 0;
+
+    const y = coords.y < 0
+      ? this._height-1
+      : 0;
+
+    return Coords.from([x, y], coords.matrix).toggleTeleport(coords.teleportEnabled);
+  }
+
   public setHeight(value: number) {
     return this.setValue("height", value);
   }
 
   public setWidth(value: number) {
     return this.setValue("width", value);
+  }
+
+  public set height(height: number) {
+    this.setHeight(height);
+  }
+
+  public get height() {
+    return this._height;
+  }
+
+  public set width(width: number) {
+    this.setWidth(width);
+  }
+
+  public get width() {
+    return this._width;
+  }
+
+  public get value(): string[][] {
+    return this._value;
   }
 
   private setValue(type: "height"|"width", value: number) {
@@ -74,14 +146,6 @@ export class Matrix {
     this._value = this.toArray();
 
     return this;
-  }
-
-  public get height() {
-    return this._height;
-  }
-
-  public get width() {
-    return this._width;
   }
 }
 

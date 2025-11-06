@@ -1,69 +1,35 @@
+import "fock-logger/config";
+import { Colors } from "fock-logger";
+
 import Coords from "./coords";
 import AnimationFrame from "./frame";
 import Matrix from "./matrix";
-import Vector2 from "./vector2";
 
-const matrix = new Matrix(10, 30, "#");
+const VOID = Colors.bgBrightCyan + " " + Colors.reset;
+const FILL = Colors.bgMagenta + " " + Colors.reset;
+
+const matrix = new Matrix(10, 30, VOID);
 const animationFrame = new AnimationFrame(20);
 
-const drawCoords = Coords.from([5, 5]);
+const drawCoords = Coords.from([0, 0]).setMatrix(matrix);
 
-// const RIGHTS: number[] = [7,0,1,2];
-// const UP:     number[] = [1,2,3,4];
-// const LEFT:   number[] = [3,4,5,6];
-// const DOWN:   number[] = [5,6,7,0];
-const RIGHTS: number[] = [0,1];
-const UP:     number[] = [2,3];
-const LEFT:   number[] = [4,5];
-const DOWN:   number[] = [6,7];
-
-/*
- 
-  654
-  7 3
-  012
-
-
-   5
-  6 4
- 7   3
-  0 2
-   1
-
+/**
+ * ДОБАВИТЬ ТЕЛЕПОРТ!
+ * 
+ * ДОБАВИТЬ ПОДДЕРЖКУ ДЛИННЫЙ СИМВОЛОВ (FILL)
+ * ДОБАВИТЬ ПОДДЕРЖКУ ТЕКСТА
 */
 
-const numberToCoords = (num: number) => {
-  const n = num % 8;
-  const coords = Coords.from([0, 0]);
+// animationFrame.setPrerender(() => null);
 
-  if (RIGHTS.includes(n)) {
-    coords.summ(Coords.from([1, 0]));
-  }
-  if (UP.includes(n)) {
-    coords.summ(Coords.from([0, 1]));
-  }
-  if (LEFT.includes(n)) {
-    coords.summ(Coords.from([-1, 0]));
-  }
-  if (DOWN.includes(n)) {
-    coords.summ(Coords.from([0, -1]));
-  }
+drawCoords.enableTeleport();
 
-  return coords;
-}
-
-let previous: Coords = drawCoords.copy();
-
-// animationFrame.setPrerender(() => {});
-
-matrix.draw(drawCoords, ".");
-animationFrame.setRender((frames) => {
-  const move = numberToCoords(frames);
-  const moveToCoords = previous.summ(move);
-
-  const vector2 = new Vector2(moveToCoords, previous.copy().summ(move.inverse()));
-  const newCoords = matrix.move(vector2);
-  previous = newCoords;
+animationFrame.setRender(() => {
+  matrix.draw(drawCoords, FILL);
+  matrix.draw(drawCoords.copy().toLeft(), VOID);
+  
+  drawCoords.toRight();
+  drawCoords.setMatrix(matrix);
 
   return matrix.toString();
 });

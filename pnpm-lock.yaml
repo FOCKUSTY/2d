@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      fock-logger:
+        specifier: ^6.3.1
+        version: 6.3.1
       nodemon:
         specifier: ^3.1.10
         version: 3.1.10
@@ -357,6 +360,10 @@ packages:
 
   flatted@3.3.3:
     resolution: {integrity: sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==}
+
+  fock-logger@6.3.1:
+    resolution: {integrity: sha512-P41EDqbUqX/fzmI43H4Yde4U754dR3UrjaW0ErSoupTQt+FvhNTiypouU5//ceFE+kfLvXEamSzc5HzvgbxQww==}
+    engines: {node: '>=7.6.0'}
 
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
@@ -1043,6 +1050,8 @@ snapshots:
       keyv: 4.5.4
 
   flatted@3.3.3: {}
+
+  fock-logger@6.3.1: {}
 
   fsevents@2.3.3:
     optional: true
