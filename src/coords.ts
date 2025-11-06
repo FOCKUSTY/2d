@@ -108,8 +108,8 @@ export class Coords<IsPartial extends boolean = false>
       previous.copyAndSumm(coords)
     );
 
-    this.setDangerousX(x);
-    this.setDangerousY(y);
+    this.dangerousSetX(x);
+    this.dangerousSetY(y);
     this.setMatrix(matrix);
 
     return this;
@@ -122,7 +122,7 @@ export class Coords<IsPartial extends boolean = false>
     return Coords.from(
       [previous.x + current.x, previous.y + current.y],
       coords.matrix
-    );
+    ).toggleTeleport(current.teleportEnabled);
   }
 
   public summ(coords: Coords<true> | Coords): this {
@@ -132,8 +132,8 @@ export class Coords<IsPartial extends boolean = false>
       previous.copyAndSumm(coords)
     );
 
-    this.setDangerousX(x);
-    this.setDangerousY(y);
+    this.dangerousSetX(x);
+    this.dangerousSetY(y);
 
     return this;
   }
@@ -145,7 +145,7 @@ export class Coords<IsPartial extends boolean = false>
       Coords.from([x, previous.y], this.matrix)
     );
 
-    return this.setDangerousX(current.x);
+    return this.dangerousSetX(current.x);
   }
 
   public setY(y: number): this {
@@ -155,17 +155,17 @@ export class Coords<IsPartial extends boolean = false>
       Coords.from([previous.x, y], this.matrix)
     );
 
-    return this.setDangerousY(current.y);
+    return this.dangerousSetY(current.y);
   }
 
-  public setDangerousX(x: number): this {
+  public dangerousSetX(x: number): this {
     this._x = x;
     this._0 = x;
 
     return this;
   }
 
-  public setDangerousY(y: number): this {
+  public dangerousSetY(y: number): this {
     this._y = y;
     this._1 = y;
 
@@ -191,7 +191,7 @@ export class Coords<IsPartial extends boolean = false>
     return this._matrix;
   }
 
-  public set matrix(matrix: Matrix) {
+  public set matrix(matrix: Matrix | undefined) {
     this.setMatrix(matrix);
   }
 
@@ -200,7 +200,7 @@ export class Coords<IsPartial extends boolean = false>
   }
 
   public set 0(value: number) {
-    this.setDangerousX(value);
+    this.setX(value);
   }
 
   public get 1(): MaybePartial<IsPartial, number> {
@@ -208,7 +208,7 @@ export class Coords<IsPartial extends boolean = false>
   }
 
   public set 1(value: number) {
-    this.setDangerousY(value);
+    this.setY(value);
   }
 
   public get x(): MaybePartial<IsPartial, number> {
@@ -216,7 +216,7 @@ export class Coords<IsPartial extends boolean = false>
   }
 
   public set x(value: number) {
-    this.setDangerousX(value);
+    this.setX(value);
   }
 
   public get y(): MaybePartial<IsPartial, number> {
@@ -224,7 +224,7 @@ export class Coords<IsPartial extends boolean = false>
   }
 
   public set y(value: number) {
-    this.setDangerousY(value);
+    this.setY(value);
   }
 
   public get [Symbol.iterator]() {
@@ -250,13 +250,13 @@ export class Coords<IsPartial extends boolean = false>
 
     const position = matrix.getTeleportPosition(Coords.from([x, y], matrix));
 
-    if (position === false) {
+    if (position === null) {
       return current;
     }
 
     this.enableTeleport();
-    this.setDangerousX(position.x);
-    this.setDangerousY(position.y);
+    this.dangerousSetX(position.x);
+    this.dangerousSetY(position.y);
 
     return this;
   }

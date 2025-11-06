@@ -5,10 +5,6 @@ const NOT_POSITIVE_VALUE_ERROR =
   "Данное значение не может быть ниже нуля или равняться нулю";
 
 export class Matrix {
-  public static resolveCoords(coords: Coords) {
-    return Array.isArray(coords) ? { x: coords[0], y: coords[1] } : coords;
-  }
-
   private _value: string[][];
   private _height: number;
   private _width: number;
@@ -75,7 +71,7 @@ export class Matrix {
   public isOutOfBoundsWithPositions(coords: Coords) {
     const { x, y } = coords;
 
-    const xOutOfBounds = x < 0 || this._width <= x;
+    const xOutOfBounds = x < 0 || this._width  <= x;
     const yOutOfBounds = y < 0 || this._height <= y;
 
     return {
@@ -91,16 +87,15 @@ export class Matrix {
     return xOutOfBounds || yOutOfBounds;
   }
 
-  public getTeleportPosition(coords: Coords): false | Coords {
+  public getTeleportPosition(coords: Coords): Coords|null {
     const { xOutOfBounds, yOutOfBounds } =
       this.isOutOfBoundsWithPositions(coords);
 
     if (!xOutOfBounds && !yOutOfBounds) {
-      return false;
+      return null;
     }
 
-    const x = coords.x < 0 ? this._width - 1 : 0;
-
+    const x = coords.x < 0 ? this._width  - 1 : 0;
     const y = coords.y < 0 ? this._height - 1 : 0;
 
     return Coords.from([x, y], coords.matrix).toggleTeleport(
