@@ -12,8 +12,7 @@
     "strictNullChecks": true,
     "skipLibCheck": true,
     "baseUrl": "./",
-    "paths": {
-    }
+    "paths": {}
   },
   "include": ["./**/*.ts"],
   "exclude": ["node_modules"],

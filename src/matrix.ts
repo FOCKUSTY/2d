@@ -1,13 +1,12 @@
 import { Coords } from "./coords";
 import Vector2 from "./vector2";
 
-const NOT_POSITIVE_VALUE_ERROR = "Данное значение не может быть ниже нуля или равняться нулю";
+const NOT_POSITIVE_VALUE_ERROR =
+  "Данное значение не может быть ниже нуля или равняться нулю";
 
 export class Matrix {
   public static resolveCoords(coords: Coords) {
-    return Array.isArray(coords)
-      ? { x: coords[0], y: coords[1] }
-      : coords;
+    return Array.isArray(coords) ? { x: coords[0], y: coords[1] } : coords;
   }
 
   private _value: string[][];
@@ -17,7 +16,7 @@ export class Matrix {
   public constructor(
     height: number,
     width: number,
-    public readonly fill: string = "#",
+    public readonly fill: string = "#"
   ) {
     if (height <= 0) {
       throw new Error(NOT_POSITIVE_VALUE_ERROR);
@@ -34,7 +33,7 @@ export class Matrix {
   }
 
   public toString() {
-    return this._value.map(v => v.join("")).join("\n");
+    return this._value.map((v) => v.join("")).join("\n");
   }
 
   public toArray(): string[][] {
@@ -50,28 +49,28 @@ export class Matrix {
 
   public draw(coords: Coords, fill: string) {
     const { x, y } = coords;
-    
+
     if (this.isOutOfBounds(coords)) {
       return this;
-    };
+    }
 
     this._value[y][x] = fill;
     return this;
   }
 
   public drawMany(coords: Coords[], fill: string) {
-    coords.forEach(value => this.draw(value, fill));
+    coords.forEach((value) => this.draw(value, fill));
     return this;
   }
 
   public move(vector2: Vector2) {
     const element = this.at(vector2.start);
-    
+
     this.draw(vector2.start, this.fill);
     this.draw(vector2.end, element);
 
     return vector2.end;
-  };
+  }
 
   public isOutOfBoundsWithPositions(coords: Coords) {
     const { x, y } = coords;
@@ -86,27 +85,27 @@ export class Matrix {
   }
 
   public isOutOfBounds(coords: Coords): boolean {
-    const { xOutOfBounds, yOutOfBounds } = this.isOutOfBoundsWithPositions(coords);
+    const { xOutOfBounds, yOutOfBounds } =
+      this.isOutOfBoundsWithPositions(coords);
 
     return xOutOfBounds || yOutOfBounds;
-  };
+  }
 
   public getTeleportPosition(coords: Coords): false | Coords {
-    const { xOutOfBounds, yOutOfBounds } = this.isOutOfBoundsWithPositions(coords);
-    
+    const { xOutOfBounds, yOutOfBounds } =
+      this.isOutOfBoundsWithPositions(coords);
+
     if (!xOutOfBounds && !yOutOfBounds) {
       return false;
     }
 
-    const x = coords.x < 0
-      ? this._width-1
-      : 0;
+    const x = coords.x < 0 ? this._width - 1 : 0;
 
-    const y = coords.y < 0
-      ? this._height-1
-      : 0;
+    const y = coords.y < 0 ? this._height - 1 : 0;
 
-    return Coords.from([x, y], coords.matrix).toggleTeleport(coords.teleportEnabled);
+    return Coords.from([x, y], coords.matrix).toggleTeleport(
+      coords.teleportEnabled
+    );
   }
 
   public setHeight(value: number) {
@@ -137,7 +136,7 @@ export class Matrix {
     return this._value;
   }
 
-  private setValue(type: "height"|"width", value: number) {
+  private setValue(type: "height" | "width", value: number) {
     if (value <= 0) {
       throw new Error(NOT_POSITIVE_VALUE_ERROR);
     }

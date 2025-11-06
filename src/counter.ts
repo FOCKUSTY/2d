@@ -1,5 +1,5 @@
 export class Counter {
-  private _value: number
+  private _value: number;
 
   public constructor(public readonly initialValue: number = 0) {
     this._value = initialValue;

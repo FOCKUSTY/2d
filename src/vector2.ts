@@ -4,10 +4,7 @@ export class Vector2 {
   private _start: Coords;
   private _end: Coords;
 
-  public constructor(
-    end: Coords,
-    start: Coords = Coords.from([0, 0]),
-  ) {
+  public constructor(end: Coords, start: Coords = Coords.from([0, 0])) {
     this._start = start;
     this._end = end;
   }
