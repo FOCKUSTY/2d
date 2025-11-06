@@ -44,13 +44,13 @@ export class Matrix {
   }
 
   public draw(coords: Coords, fill: string) {
-    const { x, y } = coords;
-
     if (this.isOutOfBounds(coords)) {
       return this;
     }
 
+    const { x, y } = coords;
     this._value[y][x] = fill;
+
     return this;
   }
 
@@ -59,13 +59,13 @@ export class Matrix {
     return this;
   }
 
-  public move(vector2: Vector2) {
+  public move(vector2: Vector2): this {
     const element = this.at(vector2.start);
 
     this.draw(vector2.start, this.fill);
     this.draw(vector2.end, element);
 
-    return vector2.end;
+    return this;
   }
 
   public isOutOfBoundsWithPositions(coords: Coords) {
