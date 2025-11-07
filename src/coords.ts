@@ -6,6 +6,11 @@ export interface ObjectCoords {
   y: number;
 }
 
+export interface AdditionalCoordsProperties {
+  matrix: Matrix,
+  teleportEnabled: boolean
+};
+
 export type ArrayCoords = [number, number];
 
 export type MaybePartial<IsPartial extends boolean, T> = IsPartial extends true
@@ -17,11 +22,11 @@ export class Coords<IsPartial extends boolean = false>
 {
   public static from(
     coords: ObjectCoords | ArrayCoords,
-    matrix?: Matrix
+    additional?: Partial<AdditionalCoordsProperties>
   ): Coords {
     return new Coords(
       ...(Array.isArray(coords) ? coords : <ArrayCoords>[coords.x, coords.y]),
-      matrix
+      additional
     );
   }
 
@@ -36,7 +41,7 @@ export class Coords<IsPartial extends boolean = false>
   public constructor(
     x: MaybePartial<IsPartial, number>,
     y: MaybePartial<IsPartial, number>,
-    martix?: Matrix
+    additional?: Partial<AdditionalCoordsProperties>
   ) {
     this._x = x;
     this._y = y;
@@ -44,7 +49,8 @@ export class Coords<IsPartial extends boolean = false>
     this._0 = x;
     this._1 = y;
 
-    this._matrix = martix;
+    this._matrix = additional?.matrix;
+    this.toggleTeleport(additional?.teleportEnabled);
   }
 
   public toggleTeleport(state?: boolean): this {
@@ -68,21 +74,17 @@ export class Coords<IsPartial extends boolean = false>
 
   public inverse(): Coords {
     const { x, y } = this.getClearCoords();
-    return new Coords(-x, -y, this._matrix).toggleTeleport(
-      this.teleportEnabled
-    );
+    return new Coords(-x, -y, this.additionalProperties);
   }
 
   public copy() {
-    return new Coords(this.x, this.y, this.matrix).toggleTeleport(
-      this.teleportEnabled
-    );
+    return new Coords(this.x, this.y, this.additionalProperties);
   }
 
   public moveTo(direction: Directions): this {
     return this.summ(
-      Coords.from(DIRECTIONS[direction], this._matrix)
-    ).toggleTeleport(this.teleportEnabled);
+      Coords.from(DIRECTIONS[direction], this.additionalProperties)
+    )
   }
 
   public toUp(): this {
@@ -121,8 +123,8 @@ export class Coords<IsPartial extends boolean = false>
 
     return Coords.from(
       [previous.x + current.x, previous.y + current.y],
-      coords.matrix
-    ).toggleTeleport(current.teleportEnabled);
+      coords.additionalProperties
+    );
   }
 
   public summ(coords: Coords<true> | Coords): this {
@@ -142,7 +144,7 @@ export class Coords<IsPartial extends boolean = false>
     const previous = this.getClearCoords();
     const current = this.onCoordsChange(
       previous,
-      Coords.from([x, previous.y], this.matrix)
+      Coords.from([x, previous.y], this.additionalProperties)
     );
 
     return this.dangerousSetX(current.x);
@@ -152,7 +154,7 @@ export class Coords<IsPartial extends boolean = false>
     const previous = this.getClearCoords();
     const current = this.onCoordsChange(
       previous,
-      Coords.from([previous.x, y], this.matrix)
+      Coords.from([previous.x, y], this.additionalProperties)
     );
 
     return this.dangerousSetY(current.y);
@@ -178,9 +180,18 @@ export class Coords<IsPartial extends boolean = false>
   }
 
   public getClearCoords(): Coords {
-    return Coords.from([this.x || 0, this.y || 0], this._matrix).toggleTeleport(
-      this.teleportEnabled
-    );
+    return Coords.from([this.x || 0, this.y || 0], this.additionalProperties);
+  }
+
+  public getAdditionalProperties(): Partial<AdditionalCoordsProperties> {
+    return {
+      matrix: this.matrix,
+      teleportEnabled: this.teleportEnabled
+    };
+  }
+
+  public get additionalProperties(): Partial<AdditionalCoordsProperties> {
+    return this.getAdditionalProperties();
   }
 
   public get teleportEnabled(): boolean {
@@ -248,7 +259,7 @@ export class Coords<IsPartial extends boolean = false>
       throw new Error("Matrix not found, but teleport enabled");
     }
 
-    const position = matrix.getTeleportPosition(Coords.from([x, y], matrix));
+    const position = matrix.getTeleportPosition(Coords.from([x, y], current.additionalProperties));
 
     if (position === null) {
       return current;

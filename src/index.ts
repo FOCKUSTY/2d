@@ -11,7 +11,8 @@ const FILL = Colors.bgMagenta + " " + Colors.reset;
 const matrix = new Matrix(10, 30, VOID);
 const animationFrame = new AnimationFrame(20);
 
-const drawCoords = new Coords(0, 0, matrix);
+const drawCoords = new Coords(0, 0, {matrix});
+
 
 /**
  * ДОБАВИТЬ ПОДДЕРЖКУ ДЛИННЫЙ СИМВОЛОВ (FILL)

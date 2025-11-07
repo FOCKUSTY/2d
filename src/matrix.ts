@@ -98,9 +98,7 @@ export class Matrix {
     const x = coords.x < 0 ? this._width  - 1 : 0;
     const y = coords.y < 0 ? this._height - 1 : 0;
 
-    return Coords.from([x, y], coords.matrix).toggleTeleport(
-      coords.teleportEnabled
-    );
+    return Coords.from([x, y], coords.additionalProperties);
   }
 
   public setHeight(value: number) {
