@@ -1,36 +1,26 @@
-import { Coords } from "./coords";
+import { ArrayCoords, Coords, ObjectCoords } from "./coords";
 
 export class Vector2 {
-  private _start: Coords;
-  private _end: Coords;
+  private _current: Coords;
+  private _move_to: Coords
 
-  public constructor(end: Coords, start: Coords = Coords.from([0, 0])) {
-    this._start = start;
-    this._end = end;
+  public constructor(current: Coords, moveTo: Coords|ArrayCoords|ObjectCoords) {
+    this._current = current;
+    this._move_to = moveTo instanceof Coords
+      ? moveTo
+      : Coords.from(moveTo);
   }
 
-  public setStart(coords: Coords<true>): Coords {
-    return this.start.set(coords);
+  public execute() {
+    return this._current.summ(this._move_to);
   }
 
-  public summStart(coords: Coords<true>): Coords {
-    return this.start.summ(coords);
+  public get current(): Coords {
+    return this._current;
   }
 
-  public setEnd(coords: Coords<true>): Coords {
-    return this.end.set(coords);
-  }
-
-  public summEnd(coords: Coords<true>): Coords {
-    return this.end.summ(coords);
-  }
-
-  public get start() {
-    return this._start;
-  }
-
-  public get end() {
-    return this._end;
+  public get moveTo(): Coords {
+    return this._move_to;
   }
 }
 

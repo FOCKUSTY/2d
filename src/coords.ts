@@ -13,11 +13,7 @@ export interface AdditionalCoordsProperties {
 
 export type ArrayCoords = [number, number];
 
-export type MaybePartial<IsPartial extends boolean, T> = IsPartial extends true
-  ? Partial<T> | undefined
-  : T;
-
-export class Coords<IsPartial extends boolean = false>
+export class Coords
   implements Partial<ObjectCoords>
 {
   public static from(
@@ -30,17 +26,31 @@ export class Coords<IsPartial extends boolean = false>
     );
   }
 
-  private _0: MaybePartial<IsPartial, number>;
-  private _1: MaybePartial<IsPartial, number>;
-  private _x: MaybePartial<IsPartial, number>;
-  private _y: MaybePartial<IsPartial, number>;
+  public static summ(...coords: (Coords|ObjectCoords|ArrayCoords)[]) {
+    return coords.reduce((previous, current) => {
+      const previousCoords = previous instanceof Coords
+        ? previous
+        : Coords.from(previous);
+
+      const currentCoords = current instanceof Coords
+        ? current
+        : Coords.from(current);
+
+      return previousCoords.summ(currentCoords);
+    })
+  }
+
+  private _0: number;
+  private _1: number;
+  private _x: number;
+  private _y: number;
 
   private _matrix?: Matrix;
   private _teleport_enabled: boolean = false;
 
   public constructor(
-    x: MaybePartial<IsPartial, number>,
-    y: MaybePartial<IsPartial, number>,
+    x: number,
+    y: number,
     additional?: Partial<AdditionalCoordsProperties>
   ) {
     this._x = x;
@@ -54,14 +64,23 @@ export class Coords<IsPartial extends boolean = false>
   }
 
   public toggleTeleport(state?: boolean): this {
+    if (!state) {
+      this._teleport_enabled = false;
+      return this;
+    }
+    
     if (!this._matrix) {
       throw new Error("Matrix not found");
     }
+    
+    this._teleport_enabled = true;
+    const coords = this._matrix.getTeleportPosition(this);
 
-    this._teleport_enabled =
-      state === undefined ? !this._teleport_enabled : state;
+    if (coords === null) {
+      return this;
+    }
 
-    return this;
+    return this.set(coords);
   }
 
   public enableTeleport(): this {
@@ -73,7 +92,7 @@ export class Coords<IsPartial extends boolean = false>
   }
 
   public inverse(): Coords {
-    const { x, y } = this.getClearCoords();
+    const { x, y } = this;
     return new Coords(-x, -y, this.additionalProperties);
   }
 
@@ -103,61 +122,47 @@ export class Coords<IsPartial extends boolean = false>
     return this.moveTo(Directions.left);
   }
 
-  public set(coords: Coords<true> | Coords): this {
-    const previous = this.getClearCoords();
-    const { x, y, matrix } = this.onCoordsChange(
-      previous,
-      previous.copyAndSumm(coords)
+  public set(coords: Coords): this {
+    this.onCoordsChange(
+      this,
+      coords
     );
-
-    this.dangerousSetX(x);
-    this.dangerousSetY(y);
-    this.setMatrix(matrix);
 
     return this;
   }
 
-  public copyAndSumm(coords: Coords<true> | Coords): Coords {
-    const previous = this.getClearCoords();
-    const current = coords.getClearCoords();
-
+  public copyAndSumm(coords: Coords): Coords {
     return Coords.from(
-      [previous.x + current.x, previous.y + current.y],
+      [this.x + coords.x, this.y + coords.y],
       coords.additionalProperties
     );
   }
 
-  public summ(coords: Coords<true> | Coords): this {
-    const previous = this.getClearCoords();
-    const { x, y } = this.onCoordsChange(
-      previous,
-      previous.copyAndSumm(coords)
+  public summ(coords: Coords): this {
+    this.onCoordsChange(
+      this,
+      this.copyAndSumm(coords)
     );
-
-    this.dangerousSetX(x);
-    this.dangerousSetY(y);
 
     return this;
   }
 
   public setX(x: number): this {
-    const previous = this.getClearCoords();
-    const current = this.onCoordsChange(
-      previous,
-      Coords.from([x, previous.y], this.additionalProperties)
+    this.onCoordsChange(
+      this,
+      Coords.from([x, this.y], this.additionalProperties)
     );
 
-    return this.dangerousSetX(current.x);
+    return this;
   }
 
   public setY(y: number): this {
-    const previous = this.getClearCoords();
-    const current = this.onCoordsChange(
-      previous,
-      Coords.from([previous.x, y], this.additionalProperties)
+    this.onCoordsChange(
+      this,
+      Coords.from([this.x, y], this.additionalProperties)
     );
 
-    return this.dangerousSetY(current.y);
+    return this;
   }
 
   public dangerousSetX(x: number): this {
@@ -177,10 +182,6 @@ export class Coords<IsPartial extends boolean = false>
   public setMatrix(martix: Matrix | undefined): this {
     this._matrix = martix;
     return this;
-  }
-
-  public getClearCoords(): Coords {
-    return Coords.from([this.x || 0, this.y || 0], this.additionalProperties);
   }
 
   public getAdditionalProperties(): Partial<AdditionalCoordsProperties> {
@@ -206,7 +207,7 @@ export class Coords<IsPartial extends boolean = false>
     this.setMatrix(matrix);
   }
 
-  public get 0(): MaybePartial<IsPartial, number> {
+  public get 0(): number {
     return this._0;
   }
 
@@ -214,7 +215,7 @@ export class Coords<IsPartial extends boolean = false>
     this.setX(value);
   }
 
-  public get 1(): MaybePartial<IsPartial, number> {
+  public get 1(): number {
     return this._1;
   }
 
@@ -222,7 +223,7 @@ export class Coords<IsPartial extends boolean = false>
     this.setY(value);
   }
 
-  public get x(): MaybePartial<IsPartial, number> {
+  public get x(): number {
     return this._x;
   }
 
@@ -230,7 +231,7 @@ export class Coords<IsPartial extends boolean = false>
     this.setX(value);
   }
 
-  public get y(): MaybePartial<IsPartial, number> {
+  public get y(): number {
     return this._y;
   }
 
@@ -248,21 +249,19 @@ export class Coords<IsPartial extends boolean = false>
     };
   }
 
-  private onCoordsChange(previous: Coords, current: Coords) {
+  private handleTeleport(coords: Coords|this) {
     if (!this._teleport_enabled) {
-      return current;
+      return coords;
     }
 
-    const { x, y, matrix } = current;
-
+    const matrix = coords.matrix || this.matrix;
     if (!matrix) {
       throw new Error("Matrix not found, but teleport enabled");
     }
 
-    const position = matrix.getTeleportPosition(Coords.from([x, y], current.additionalProperties));
-
+    const position = matrix.getTeleportPosition(coords);
     if (position === null) {
-      return current;
+      return coords;
     }
 
     this.enableTeleport();
@@ -270,6 +269,17 @@ export class Coords<IsPartial extends boolean = false>
     this.dangerousSetY(position.y);
 
     return this;
+  }
+
+  private onCoordsChange(previous: Coords, current: Coords): void {
+    this.dangerousSetX(current.x);
+    this.dangerousSetY(current.y);
+    
+    if (current.matrix) {
+      this.setMatrix(this.matrix);
+    }
+    
+    this.handleTeleport(current);
   }
 }
 

@@ -32,7 +32,7 @@ export class Matrix {
   }
 
   public toString() {
-    return this._value.map((v) => v.join("")).join("\n");
+    return this._value.map((_, i, arr) => arr[arr.length-1-i].join("")).join("\n");
   }
 
   public toArray(): string[][] {
@@ -63,10 +63,11 @@ export class Matrix {
   }
 
   public move(vector2: Vector2): this {
-    const element = this.at(vector2.start);
+    const element = this.at(vector2.current);
 
-    this.draw(vector2.start, this.fill);
-    this.draw(vector2.end, element);
+    this.draw(vector2.current, this._fill);
+    vector2.execute();
+    this.draw(vector2.current, element);
 
     return this;
   }
@@ -90,6 +91,22 @@ export class Matrix {
     return xOutOfBounds || yOutOfBounds;
   }
 
+  public getTeleportPositionX(x: number, xOutOfBounds: boolean): number {
+    if (!xOutOfBounds) {
+      return x;
+    }
+
+    return x < 0 ? this._width  - 1 : 0;
+  }
+
+  public getTeleportPositionY(y: number, yOutOfBounds: boolean): number {
+    if (!yOutOfBounds) {
+      return y;
+    }
+
+    return y < 0 ? this._width  - 1 : 0;
+  }
+
   public getTeleportPosition(coords: Coords): Coords|null {
     const { xOutOfBounds, yOutOfBounds } =
       this.isOutOfBoundsWithPositions(coords);
@@ -98,8 +115,8 @@ export class Matrix {
       return null;
     }
 
-    const x = coords.x < 0 ? this._width  - 1 : 0;
-    const y = coords.y < 0 ? this._height - 1 : 0;
+    const x = this.getTeleportPositionX(coords.x, xOutOfBounds);
+    const y = this.getTeleportPositionY(coords.y, yOutOfBounds);
 
     return Coords.from([x, y], coords.additionalProperties);
   }
