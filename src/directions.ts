@@ -1,8 +1,9 @@
+// prettier-ignore-start
 export const enum Directions {
-  up = "UP",
+  up    = "UP",
   right = "RIGHT",
-  down = "DOWN",
-  left = "LEFT"
+  down  = "DOWN",
+  left  = "LEFT"
 }
 
 export const DIRECTIONS: Record<Uppercase<Directions>, [number, number]> = {
@@ -11,3 +12,4 @@ export const DIRECTIONS: Record<Uppercase<Directions>, [number, number]> = {
   DOWN:  [  0, -1 ],
   LEFT:  [ -1,  0 ]
 } as const;
+// prettier-ignore-end
