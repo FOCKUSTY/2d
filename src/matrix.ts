@@ -8,11 +8,12 @@ export class Matrix {
   private _value: string[][];
   private _height: number;
   private _width: number;
+  private _fill: string;
 
   public constructor(
     height: number,
     width: number,
-    public readonly fill: string = "#"
+    fill: string = "#"
   ) {
     if (height <= 0) {
       throw new Error(NOT_POSITIVE_VALUE_ERROR);
@@ -24,6 +25,8 @@ export class Matrix {
 
     this._height = height;
     this._width = width;
+
+    this._fill = fill;
 
     this._value = this.toArray();
   }
@@ -109,6 +112,13 @@ export class Matrix {
     return this.setValue("width", value);
   }
 
+  public setFill(fill: string) {
+    /**
+     * ДОБАВИТЬ onFillChange
+     */
+    this._fill = fill;
+  }
+
   public set height(height: number) {
     this.setHeight(height);
   }
@@ -127,6 +137,14 @@ export class Matrix {
 
   public get value(): string[][] {
     return this._value;
+  }
+
+  public set fill(fill: string) {
+    this.setFill(fill);
+  }
+
+  public get fill(): string {
+    return this._fill;
   }
 
   private setValue(type: "height" | "width", value: number) {
