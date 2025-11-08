@@ -198,6 +198,11 @@ export class MatrixObject {
     this._z_index = zIndex;
   }
 
+  public getKey() {
+    const { x, y } = this.center;
+    return `${x}-${y}-${this._z_index}`;
+  }
+
   public transformElements(callback: (elements: Element[]) => Element[]): this {
     this._elements = callback([...this._elements]);
     return this;

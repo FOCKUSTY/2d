@@ -63,7 +63,7 @@ export class Matrix {
   private _width: number;
   private _fill: string;
 
-  private _objects: MatrixObject[] = [];
+  private _objects: Map<string, MatrixObject> = new Map();
 
   public constructor(height: number, width: number, fill: string = "#") {
     if (height <= 0) {
@@ -102,7 +102,7 @@ export class Matrix {
   public drawObjects() {
     const objects = this.getObjectSortedByZ();
 
-    for (const object of objects) {
+    for (const object of objects.values()) {
       const elements = MatrixObject.resolveElementCoords(
         object.center,
         object.elements
@@ -114,9 +114,12 @@ export class Matrix {
   }
 
   public getObjectSortedByZ() {
-    return this._objects.sort((previous, current) => {
+    const entriesArray = Array.from(this._objects.entries());
+    const sortedEntries = entriesArray.sort(([_a, previous], [_b, current]) => {
       return previous.zIndex - current.zIndex;
     });
+    
+    return new Map(sortedEntries);
   }
 
   public createOneObject(coords: ICoords, fill: string): this {
@@ -126,13 +129,13 @@ export class Matrix {
       elements: [[0, 0, 0]]
     });
 
-    this._objects.push(object);
+    this._objects.set(object.getKey(), object);
 
     return this;
   }
 
   public createObject(object: MatrixObject): this {
-    this._objects.push(object);
+    this._objects.set(object.getKey(), object);
     return this;
   }
 
@@ -164,7 +167,8 @@ export class Matrix {
     return this;
   }
 
-  public move(vector2: Vector2): this {
+  /** @default */
+  public moveDrawElement(vector2: Vector2): this {
     const element = this.at(vector2.current);
 
     this.draw(vector2.current, this._fill);
