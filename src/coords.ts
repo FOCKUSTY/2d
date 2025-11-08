@@ -8,17 +8,15 @@ export interface ObjectCoords {
 }
 
 export interface AdditionalCoordsProperties {
-  matrix: Matrix,
-  teleportEnabled: boolean
-};
+  matrix: Matrix;
+  teleportEnabled: boolean;
+}
 
 export type ArrayCoords = [number, number, number];
 
-export type ICoords = ObjectCoords|ArrayCoords|Coords;
+export type ICoords = ObjectCoords | ArrayCoords | Coords;
 
-export class Coords
-  implements Partial<ObjectCoords>
-{
+export class Coords implements Partial<ObjectCoords> {
   public static from(
     coords: ICoords,
     additional?: Partial<AdditionalCoordsProperties>
@@ -26,9 +24,11 @@ export class Coords
     if (coords instanceof Coords) {
       return coords;
     }
-    
+
     return new Coords(
-      (Array.isArray(coords) ? coords : <ArrayCoords>[coords.x, coords.y, coords.z]),
+      Array.isArray(coords)
+        ? coords
+        : <ArrayCoords>[coords.x, coords.y, coords.z],
       additional
     );
   }
@@ -39,18 +39,16 @@ export class Coords
       : coords;
   }
 
-  public static summ(...coords: (Coords|ObjectCoords|ArrayCoords)[]) {
+  public static summ(...coords: (Coords | ObjectCoords | ArrayCoords)[]) {
     return coords.reduce((previous, current) => {
-      const previousCoords = previous instanceof Coords
-        ? previous
-        : Coords.from(previous);
+      const previousCoords =
+        previous instanceof Coords ? previous : Coords.from(previous);
 
-      const currentCoords = current instanceof Coords
-        ? current
-        : Coords.from(current);
+      const currentCoords =
+        current instanceof Coords ? current : Coords.from(current);
 
       return previousCoords.summ(currentCoords);
-    })
+    });
   }
 
   private _0: number;
@@ -64,7 +62,7 @@ export class Coords
   private _teleport_enabled: boolean = false;
 
   public constructor(
-    coords: ArrayCoords|ObjectCoords,
+    coords: ArrayCoords | ObjectCoords,
     additional?: Partial<AdditionalCoordsProperties>
   ) {
     const { x, y, z } = Coords.getXYZ(coords);
@@ -86,11 +84,11 @@ export class Coords
       this._teleport_enabled = false;
       return this;
     }
-    
+
     if (!this._matrix) {
       throw new Error("Matrix not found");
     }
-    
+
     this._teleport_enabled = true;
     const coords = this._matrix.getTeleportPosition(this);
 
@@ -121,7 +119,7 @@ export class Coords
   public moveTo(direction: Directions): this {
     return this.summ(
       Coords.from(DIRECTIONS[direction], this.additionalProperties)
-    )
+    );
   }
 
   public toUp(): this {
@@ -141,48 +139,33 @@ export class Coords
   }
 
   public set(coords: Coords): this {
-    this.onCoordsChange(
-      this,
-      coords
-    );
+    this.onCoordsChange(this, coords);
 
     return this;
   }
 
   public copyAndSubtract(coords: Coords): Coords {
-    return Coords.from([
-        this.x - coords.x,
-        this.y - coords.y,
-        this.z - coords.z
-      ],
+    return Coords.from(
+      [this.x - coords.x, this.y - coords.y, this.z - coords.z],
       coords.additionalProperties
     );
   }
 
   public copyAndSumm(coords: Coords): Coords {
-    return Coords.from([
-        this.x + coords.x,
-        this.y + coords.y,
-        this.z - coords.z
-      ],
+    return Coords.from(
+      [this.x + coords.x, this.y + coords.y, this.z - coords.z],
       coords.additionalProperties
     );
   }
 
   public subtract(coords: Coords): this {
-    this.onCoordsChange(
-      this,
-      this.copyAndSubtract(coords)
-    );
+    this.onCoordsChange(this, this.copyAndSubtract(coords));
 
     return this;
   }
 
   public summ(coords: Coords): this {
-    this.onCoordsChange(
-      this,
-      this.copyAndSumm(coords)
-    );
+    this.onCoordsChange(this, this.copyAndSumm(coords));
 
     return this;
   }
@@ -311,7 +294,6 @@ export class Coords
     this.setZ(value);
   }
 
-
   public get [Symbol.iterator]() {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const context = this;
@@ -323,7 +305,7 @@ export class Coords
     };
   }
 
-  private handleTeleport(coords: Coords|this) {
+  private handleTeleport(coords: Coords | this) {
     if (!this._teleport_enabled) {
       return coords;
     }
@@ -350,11 +332,11 @@ export class Coords
     this.dangerousSetX(current.x);
     this.dangerousSetY(current.y);
     this.dangerousSetZ(current.z);
-    
+
     if (current.matrix) {
       this.setMatrix(this.matrix);
     }
-    
+
     this.handleTeleport(current);
   }
 }

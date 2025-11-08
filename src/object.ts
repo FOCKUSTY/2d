@@ -2,8 +2,8 @@ import Coords, { ArrayCoords, ICoords } from "./coords";
 import Matrix, { IMatrix } from "./matrix";
 
 export interface IElement {
-  coords: Coords,
-  fill: string
+  coords: Coords;
+  fill: string;
 }
 
 export class Element {
@@ -14,38 +14,41 @@ export class Element {
 }
 
 export type Fill = {
-  center: string,
-  elements: string[],
-  void: string,
-  air: string
-}
+  center: string;
+  elements: string[];
+  void: string;
+  air: string;
+};
 
 export type Config = {
-  centerIsElement: boolean,
-  centerFillReplaceString: string,
-}
+  centerIsElement: boolean;
+  centerFillReplaceString: string;
+};
 
 export type MartixObjectConstructorParameters = {
-  center: ICoords,
-  defaultFill: string,
-  zIndex?: number,
-  elements?: (Element|ICoords)[]
-}
+  center: ICoords;
+  defaultFill: string;
+  zIndex?: number;
+  elements?: (Element | ICoords)[];
+};
 
 export class MatrixObject {
-  public static resolvePartialElements(fill: string, elements?: (ICoords|Element)[]): Element[] {
+  public static resolvePartialElements(
+    fill: string,
+    elements?: (ICoords | Element)[]
+  ): Element[] {
     if (!elements) {
       return [];
     }
 
-    return elements.map(element => {
+    return elements.map((element) => {
       if (element instanceof Coords) {
-        return new Element(element, fill)
+        return new Element(element, fill);
       }
 
       if (element instanceof Element) {
         return element;
-      };
+      }
 
       return new Element(Coords.from(element), fill);
     });
@@ -56,32 +59,32 @@ export class MatrixObject {
     fill,
     config
   }: {
-    matrix: IMatrix,
-    fill: Fill,
-    config?: Partial<Config>
-  }): { elements: Element[], center: Coords } {
+    matrix: IMatrix;
+    fill: Fill;
+    config?: Partial<Config>;
+  }): { elements: Element[]; center: Coords } {
     const resolvedMatrix = Matrix.from(matrix, fill.void);
 
     const elements: Element[] = [];
-    let center: Coords|null = null;
+    let center: Coords | null = null;
 
     const pushMatrixElement = (coords: Coords, fill: string) => {
       const element = new Element(coords, fill);
       elements.push(element);
-    }
+    };
 
     for (const data of resolvedMatrix) {
       const { coords, element } = data;
       const isAirOrVoid = element === fill.air || element === fill.void;
-      
+
       if (isAirOrVoid) {
         continue;
       }
-      
+
       if (fill.elements.includes(element)) {
         pushMatrixElement(coords, element);
       }
-      
+
       if (element === fill.center) {
         if (config?.centerIsElement) {
           pushMatrixElement(coords, config.centerFillReplaceString || element);
@@ -96,8 +99,9 @@ export class MatrixObject {
     }
 
     return {
-      elements, center
-    }
+      elements,
+      center
+    };
   }
 
   public static getElementsAndCenterByMatrixWithOffset({
@@ -105,14 +109,15 @@ export class MatrixObject {
     fill,
     config
   }: {
-    matrix: IMatrix,
-    fill: Fill,
-    config?: Partial<Config>
-  }): { elements: Element[], center: Coords } {
-    const { elements: elementsWithoutOffset, center } = this.getElementsAndCenterByMatrixWithoutOffset({ matrix, fill, config });
+    matrix: IMatrix;
+    fill: Fill;
+    config?: Partial<Config>;
+  }): { elements: Element[]; center: Coords } {
+    const { elements: elementsWithoutOffset, center } =
+      this.getElementsAndCenterByMatrixWithoutOffset({ matrix, fill, config });
 
-    const elements = elementsWithoutOffset.map(element => {
-      const coords = element.coords.subtract(center)
+    const elements = elementsWithoutOffset.map((element) => {
+      const coords = element.coords.subtract(center);
       return {
         coords,
         fill: element.fill
@@ -130,11 +135,15 @@ export class MatrixObject {
     fill,
     config
   }: {
-    matrix: IMatrix,
-    fill: Fill & { defaultFill: string },
-    config?: Partial<Config>
+    matrix: IMatrix;
+    fill: Fill & { defaultFill: string };
+    config?: Partial<Config>;
   }): MatrixObject {
-    const { elements, center } = this.getElementsAndCenterByMatrixWithOffset({ matrix, fill, config });
+    const { elements, center } = this.getElementsAndCenterByMatrixWithOffset({
+      matrix,
+      fill,
+      config
+    });
 
     return new MatrixObject({
       center: center,
@@ -144,7 +153,7 @@ export class MatrixObject {
   }
 
   public static resolveElementCoords(center: Coords, elements: Element[]) {
-    return elements.map(element => {
+    return elements.map((element) => {
       const coords = element.coords.summ(center);
       return {
         coords,
@@ -162,7 +171,7 @@ export class MatrixObject {
    * @param center начало отчёта элементов
    * @param defaultFill заполнитель для элементов
    * @param elements элементы (их координаты назначаются относительно начала отчёта)
-   * 
+   *
    * @example
    * ```ts
    * new MartixObject(
@@ -203,7 +212,7 @@ export class MatrixObject {
     this._default_fill = fill;
     return this;
   }
-  
+
   public setZIndex(zIndex: number): this {
     this._z_index = zIndex;
     return this;
@@ -216,7 +225,7 @@ export class MatrixObject {
   public getZIndex(): number {
     return this._z_index;
   }
-  
+
   public getElements(): Element[] {
     return this._elements;
   }
@@ -228,7 +237,7 @@ export class MatrixObject {
   public set center(coords: Coords) {
     this.setCenter(coords);
   }
-  
+
   public set defaultFill(fill: string) {
     this.setDefaultFill(fill);
   }
@@ -244,7 +253,7 @@ export class MatrixObject {
   public get center(): Coords {
     return this.getCenter();
   }
-  
+
   public get elements(): Element[] {
     return this.getElements();
   }

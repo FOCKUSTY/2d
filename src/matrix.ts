@@ -9,14 +9,14 @@ const NOT_POSITIVE_VALUE_ERROR =
 export type MatrixValue = string[][];
 
 export type MatrixSize = {
-  height: number,
-  width: number
-}
+  height: number;
+  width: number;
+};
 
-export type IMatrix = Matrix|MatrixValue;
+export type IMatrix = Matrix | MatrixValue;
 
 export class Matrix {
-  public static validateMatrixValue(value: MatrixValue): null|MatrixSize {
+  public static validateMatrixValue(value: MatrixValue): null | MatrixSize {
     const height = value.length;
 
     if (height <= 0) {
@@ -26,11 +26,11 @@ export class Matrix {
     const width = value[0].length;
 
     if (width <= 0) {
-      return null
+      return null;
     }
 
-    const lengthSame = value.every(element => element.length === width);
-    
+    const lengthSame = value.every((element) => element.length === width);
+
     if (!lengthSame) {
       return null;
     }
@@ -65,11 +65,7 @@ export class Matrix {
 
   private _objects: MatrixObject[] = [];
 
-  public constructor(
-    height: number,
-    width: number,
-    fill: string = "#"
-  ) {
+  public constructor(height: number, width: number, fill: string = "#") {
     if (height <= 0) {
       throw new Error(NOT_POSITIVE_VALUE_ERROR);
     }
@@ -87,7 +83,9 @@ export class Matrix {
   }
 
   public toString() {
-    return this._value.map((_, i, arr) => arr[arr.length-1-i].join("")).join("\n");
+    return this._value
+      .map((_, i, arr) => arr[arr.length - 1 - i].join(""))
+      .join("\n");
   }
 
   public toArray(): MatrixValue {
@@ -105,7 +103,10 @@ export class Matrix {
     const objects = this.getObjectSortedByZ();
 
     for (const object of objects) {
-      const elements = MatrixObject.resolveElementCoords(object.center, object.elements);
+      const elements = MatrixObject.resolveElementCoords(
+        object.center,
+        object.elements
+      );
       this.drawElements(elements);
     }
 
@@ -115,16 +116,16 @@ export class Matrix {
   public getObjectSortedByZ() {
     return this._objects.sort((previous, current) => {
       return previous.zIndex - current.zIndex;
-    })
+    });
   }
 
   public createOneObject(coords: ICoords, fill: string): this {
     const object = new MatrixObject({
       center: coords,
       defaultFill: fill,
-      elements: [[0,0,0]]
+      elements: [[0, 0, 0]]
     });
-    
+
     this._objects.push(object);
 
     return this;
@@ -140,7 +141,7 @@ export class Matrix {
   }
 
   public drawElements(elements: Element[]) {
-    elements.forEach(element => this.drawElement(element));
+    elements.forEach((element) => this.drawElement(element));
     return this;
   }
 
@@ -150,13 +151,13 @@ export class Matrix {
     if (this.isOutOfBounds(resolvedCoords)) {
       return this;
     }
-    
+
     const { x, y } = resolvedCoords;
     this._value[y][x] = fill;
-    
+
     return this;
   }
-  
+
   /** @deprecated */
   public drawMany(coords: ICoords[], fill: string) {
     coords.forEach((value) => this.draw(value, fill));
@@ -176,7 +177,7 @@ export class Matrix {
   public isOutOfBoundsWithPositions(coords: ICoords) {
     const { x, y } = Coords.getXYZ(coords);
 
-    const xOutOfBounds = x < 0 || this._width  <= x;
+    const xOutOfBounds = x < 0 || this._width <= x;
     const yOutOfBounds = y < 0 || this._height <= y;
 
     return {
@@ -197,7 +198,7 @@ export class Matrix {
       return x;
     }
 
-    return x < 0 ? this._width  - 1 : 0;
+    return x < 0 ? this._width - 1 : 0;
   }
 
   public getTeleportPositionY(y: number, yOutOfBounds: boolean): number {
@@ -205,10 +206,10 @@ export class Matrix {
       return y;
     }
 
-    return y < 0 ? this._width  - 1 : 0;
+    return y < 0 ? this._width - 1 : 0;
   }
 
-  public getTeleportPosition(coords: Coords): Coords|null {
+  public getTeleportPosition(coords: Coords): Coords | null {
     const { xOutOfBounds, yOutOfBounds } =
       this.isOutOfBoundsWithPositions(coords);
 
@@ -273,12 +274,12 @@ export class Matrix {
   public get [Symbol.iterator]() {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const context = this;
-    return function*() {
+    return function* () {
       for (const y in context._value) {
         for (const x in context._value[y]) {
           const coords = Coords.from([+x, +y, 0]);
           const element = context.at(coords);
-          
+
           yield {
             coords,
             element
@@ -287,7 +288,7 @@ export class Matrix {
       }
 
       return;
-    }
+    };
   }
 
   private setValue(type: "height" | "width", value: number) {

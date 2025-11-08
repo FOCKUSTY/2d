@@ -3,9 +3,9 @@ import Matrix from "./matrix";
 
 export interface AdditionProperties {
   fill: {
-    void: string,
-    air: string
-  }
+    void: string;
+    air: string;
+  };
 }
 
 export class Screen {
@@ -15,7 +15,7 @@ export class Screen {
   public constructor(
     matrix: Matrix,
     additionalProperties: AdditionProperties,
-    public readonly animationFrame: AnimationFrame = new AnimationFrame(),
+    public readonly animationFrame: AnimationFrame = new AnimationFrame()
   ) {
     this._fill = additionalProperties.fill;
     this._martix = matrix;
