@@ -13,17 +13,29 @@ export interface AdditionalCoordsProperties {
 
 export type ArrayCoords = [number, number];
 
+export type ICoords = ObjectCoords|ArrayCoords|Coords;
+
 export class Coords
   implements Partial<ObjectCoords>
 {
   public static from(
-    coords: ObjectCoords | ArrayCoords,
+    coords: ICoords,
     additional?: Partial<AdditionalCoordsProperties>
   ): Coords {
+    if (coords instanceof Coords) {
+      return coords;
+    }
+    
     return new Coords(
       ...(Array.isArray(coords) ? coords : <ArrayCoords>[coords.x, coords.y]),
       additional
     );
+  }
+
+  public static getXY(coords: ICoords): ObjectCoords {
+    return Array.isArray(coords)
+      ? { x: coords[0], y: coords[1] }
+      : coords;
   }
 
   public static summ(...coords: (Coords|ObjectCoords|ArrayCoords)[]) {
@@ -131,11 +143,27 @@ export class Coords
     return this;
   }
 
+  public copyAndSubtract(coords: Coords): Coords {
+    return Coords.from(
+      [this.x - coords.x, this.y - coords.y],
+      coords.additionalProperties
+    );
+  }
+
   public copyAndSumm(coords: Coords): Coords {
     return Coords.from(
       [this.x + coords.x, this.y + coords.y],
       coords.additionalProperties
     );
+  }
+
+  public subtract(coords: Coords): this {
+    this.onCoordsChange(
+      this,
+      this.copyAndSubtract(coords)
+    );
+
+    return this;
   }
 
   public summ(coords: Coords): this {

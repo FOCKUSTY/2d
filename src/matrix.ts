@@ -1,14 +1,69 @@
-import { Coords } from "./coords";
+import Coords from "./coords";
+import type { ICoords } from "./coords";
+import MatrixObject from "./object";
 import Vector2 from "./vector2";
 
 const NOT_POSITIVE_VALUE_ERROR =
   "Данное значение не может быть ниже нуля или равняться нулю";
 
+export type MatrixValue = string[][];
+
+export type MatrixSize = {
+  height: number,
+  width: number
+}
+
+export type IMatrix = Matrix|MatrixValue;
+
 export class Matrix {
-  private _value: string[][];
+  public static validateMatrixValue(value: MatrixValue): null|MatrixSize {
+    const height = value.length;
+
+    if (height <= 0) {
+      return null;
+    }
+
+    const width = value[0].length;
+
+    if (width <= 0) {
+      return null
+    }
+
+    const lengthSame = value.every(element => element.length === width);
+    
+    if (!lengthSame) {
+      return null;
+    }
+
+    return {
+      height,
+      width
+    };
+  }
+
+  public static from(value: IMatrix, fill: string): Matrix {
+    if (value instanceof Matrix) {
+      return value;
+    }
+
+    const size = this.validateMatrixValue(value);
+
+    if (!size) {
+      throw new Error("Bad matrix");
+    }
+
+    const matrix = new Matrix(size.height, size.width, fill);
+    matrix.dangerousSetValue(value);
+
+    return matrix;
+  }
+
+  private _value: MatrixValue;
   private _height: number;
   private _width: number;
   private _fill: string;
+
+  private _objects: MatrixObject[] = [];
 
   public constructor(
     height: number,
@@ -35,29 +90,44 @@ export class Matrix {
     return this._value.map((_, i, arr) => arr[arr.length-1-i].join("")).join("\n");
   }
 
-  public toArray(): string[][] {
+  public toArray(): MatrixValue {
     return Array.from({ length: this._height }, () =>
       Array.from({ length: this._width }, () => this.fill)
     );
   }
 
-  public at(coords: Coords) {
-    const { x, y } = coords;
+  public at(coords: ICoords) {
+    const { x, y } = Coords.getXY(coords);
     return this._value[y][x];
   }
 
-  public draw(coords: Coords, fill: string) {
-    if (this.isOutOfBounds(coords)) {
-      return this;
-    }
-
-    const { x, y } = coords;
-    this._value[y][x] = fill;
+  public createOneObject(coords: ICoords, fill: string): this {
+    const object = new MatrixObject({
+      center: coords,
+      defaultFill: fill,
+      elements: [[0,0]]
+    });
+    
+    this._objects.push(object);
 
     return this;
   }
 
-  public drawMany(coords: Coords[], fill: string) {
+  /** @deprecated */
+  public draw(coords: ICoords, fill: string) {
+    const resolvedCoords = Coords.from(coords);
+    if (this.isOutOfBounds(resolvedCoords)) {
+      return this;
+    }
+    
+    const { x, y } = resolvedCoords;
+    this._value[y][x] = fill;
+    
+    return this;
+  }
+  
+  /** @deprecated */
+  public drawMany(coords: ICoords[], fill: string) {
     coords.forEach((value) => this.draw(value, fill));
     return this;
   }
@@ -72,8 +142,8 @@ export class Matrix {
     return this;
   }
 
-  public isOutOfBoundsWithPositions(coords: Coords) {
-    const { x, y } = coords;
+  public isOutOfBoundsWithPositions(coords: ICoords) {
+    const { x, y } = Coords.getXY(coords);
 
     const xOutOfBounds = x < 0 || this._width  <= x;
     const yOutOfBounds = y < 0 || this._height <= y;
@@ -84,7 +154,7 @@ export class Matrix {
     };
   }
 
-  public isOutOfBounds(coords: Coords): boolean {
+  public isOutOfBounds(coords: ICoords): boolean {
     const { xOutOfBounds, yOutOfBounds } =
       this.isOutOfBoundsWithPositions(coords);
 
@@ -129,6 +199,11 @@ export class Matrix {
     return this.setValue("width", value);
   }
 
+  public dangerousSetValue(value: MatrixValue) {
+    this._value = value;
+    return this;
+  }
+
   public setFill(fill: string) {
     /**
      * ДОБАВИТЬ onFillChange
@@ -152,7 +227,7 @@ export class Matrix {
     return this._width;
   }
 
-  public get value(): string[][] {
+  public get value(): MatrixValue {
     return this._value;
   }
 
@@ -162,6 +237,26 @@ export class Matrix {
 
   public get fill(): string {
     return this._fill;
+  }
+
+  public get [Symbol.iterator]() {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const context = this;
+    return function*() {
+      for (const y in context._value) {
+        for (const x in context._value[y]) {
+          const coords = Coords.from([+x, +y]);
+          const element = context.at(coords);
+          
+          yield {
+            coords,
+            element
+          };
+        }
+      }
+
+      return;
+    }
   }
 
   private setValue(type: "height" | "width", value: number) {
