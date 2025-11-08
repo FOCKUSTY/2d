@@ -29,30 +29,14 @@ const drawCoords2 = new Coords([-1, 1, 0], {matrix});
 
 drawCoords.enableTeleport();
 drawCoords2.enableTeleport();
-matrix.draw(drawCoords, FILL);
+matrix.createOneObject(drawCoords, FILL);
+// matrix.draw(drawCoords, FILL);
 
-const object = MatrixObject.createObjectByMatrix({
-  matrix: [
-    [VOID,VOID,VOID],
-    ["-","+","-"],
-    [VOID,VOID,VOID],
-  ],
-  fill: {
-    air: "AIR",
-    center: "+",
-    elements: ["-"],
-    void: VOID,
-    defaultFill: VOID
-  },
-  config: {
-    centerIsElement: true,
-    centerFillReplaceString: "-"
-  }
-});
+matrix.drawObjects();
 
 animationFrame.setRender(() => {
-  const vector2 = new Vector2(drawCoords, Coords.summ(DIRECTIONS.RIGHT));
-  matrix.move(vector2);
+  // const vector2 = new Vector2(drawCoords, Coords.summ(DIRECTIONS.RIGHT));
+  // matrix.move(vector2);
   
   return matrix.toString();
 });
@@ -60,8 +44,8 @@ animationFrame.setRender(() => {
 const screen = new Screen(matrix, {
   fill: {
     void: VOID,
-    air: "NULL"
+    air: "AIR"
   },
 }, animationFrame);
 
-// screen.execute();
+screen.execute();

@@ -143,6 +143,16 @@ export class MatrixObject {
     });
   }
 
+  public static resolveElementCoords(center: Coords, elements: Element[]) {
+    return elements.map(element => {
+      const coords = element.coords.summ(center);
+      return {
+        coords,
+        fill: element.fill
+      };
+    });
+  }
+
   private _center: Coords;
   private _elements: Element[];
   private _default_fill: string;

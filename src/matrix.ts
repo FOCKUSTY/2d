@@ -1,6 +1,6 @@
 import Coords from "./coords";
 import type { ICoords } from "./coords";
-import MatrixObject from "./object";
+import MatrixObject, { Element } from "./object";
 import Vector2 from "./vector2";
 
 const NOT_POSITIVE_VALUE_ERROR =
@@ -101,6 +101,23 @@ export class Matrix {
     return this._value[y][x];
   }
 
+  public drawObjects() {
+    const objects = this.getObjectSortedByZ();
+
+    for (const object of objects) {
+      const elements = MatrixObject.resolveElementCoords(object.center, object.elements);
+      this.drawElements(elements);
+    }
+
+    return this;
+  }
+
+  public getObjectSortedByZ() {
+    return this._objects.sort((previous, current) => {
+      return previous.zIndex - current.zIndex;
+    })
+  }
+
   public createOneObject(coords: ICoords, fill: string): this {
     const object = new MatrixObject({
       center: coords,
@@ -110,6 +127,20 @@ export class Matrix {
     
     this._objects.push(object);
 
+    return this;
+  }
+
+  public createObject(object: MatrixObject): this {
+    this._objects.push(object);
+    return this;
+  }
+
+  public drawElement(element: Element) {
+    return this.draw(element.coords, element.fill);
+  }
+
+  public drawElements(elements: Element[]) {
+    elements.forEach(element => this.drawElement(element));
     return this;
   }
 
