@@ -97,7 +97,7 @@ export class Matrix {
   }
 
   public at(coords: ICoords) {
-    const { x, y } = Coords.getXY(coords);
+    const { x, y } = Coords.getXYZ(coords);
     return this._value[y][x];
   }
 
@@ -105,7 +105,7 @@ export class Matrix {
     const object = new MatrixObject({
       center: coords,
       defaultFill: fill,
-      elements: [[0,0]]
+      elements: [[0,0,0]]
     });
     
     this._objects.push(object);
@@ -143,7 +143,7 @@ export class Matrix {
   }
 
   public isOutOfBoundsWithPositions(coords: ICoords) {
-    const { x, y } = Coords.getXY(coords);
+    const { x, y } = Coords.getXYZ(coords);
 
     const xOutOfBounds = x < 0 || this._width  <= x;
     const yOutOfBounds = y < 0 || this._height <= y;
@@ -188,7 +188,7 @@ export class Matrix {
     const x = this.getTeleportPositionX(coords.x, xOutOfBounds);
     const y = this.getTeleportPositionY(coords.y, yOutOfBounds);
 
-    return Coords.from([x, y], coords.additionalProperties);
+    return Coords.from([x, y, coords.z], coords.additionalProperties);
   }
 
   public setHeight(value: number) {
@@ -245,7 +245,7 @@ export class Matrix {
     return function*() {
       for (const y in context._value) {
         for (const x in context._value[y]) {
-          const coords = Coords.from([+x, +y]);
+          const coords = Coords.from([+x, +y, 0]);
           const element = context.at(coords);
           
           yield {

@@ -4,6 +4,7 @@ import Matrix from "./matrix";
 export interface ObjectCoords {
   x: number;
   y: number;
+  z: number;
 }
 
 export interface AdditionalCoordsProperties {
@@ -11,7 +12,7 @@ export interface AdditionalCoordsProperties {
   teleportEnabled: boolean
 };
 
-export type ArrayCoords = [number, number];
+export type ArrayCoords = [number, number, number];
 
 export type ICoords = ObjectCoords|ArrayCoords|Coords;
 
@@ -27,14 +28,14 @@ export class Coords
     }
     
     return new Coords(
-      ...(Array.isArray(coords) ? coords : <ArrayCoords>[coords.x, coords.y]),
+      (Array.isArray(coords) ? coords : <ArrayCoords>[coords.x, coords.y, coords.z]),
       additional
     );
   }
 
-  public static getXY(coords: ICoords): ObjectCoords {
+  public static getXYZ(coords: ICoords): ObjectCoords {
     return Array.isArray(coords)
-      ? { x: coords[0], y: coords[1] }
+      ? { x: coords[0], y: coords[1], z: coords[2] }
       : coords;
   }
 
@@ -54,22 +55,27 @@ export class Coords
 
   private _0: number;
   private _1: number;
+  private _2: number;
   private _x: number;
   private _y: number;
+  private _z: number;
 
   private _matrix?: Matrix;
   private _teleport_enabled: boolean = false;
 
   public constructor(
-    x: number,
-    y: number,
+    coords: ArrayCoords|ObjectCoords,
     additional?: Partial<AdditionalCoordsProperties>
   ) {
+    const { x, y, z } = Coords.getXYZ(coords);
+
     this._x = x;
     this._y = y;
+    this._z = z;
 
     this._0 = x;
     this._1 = y;
+    this._2 = z;
 
     this._matrix = additional?.matrix;
     this.toggleTeleport(additional?.teleportEnabled);
@@ -104,12 +110,12 @@ export class Coords
   }
 
   public inverse(): Coords {
-    const { x, y } = this;
-    return new Coords(-x, -y, this.additionalProperties);
+    const { x, y, z } = this;
+    return new Coords([-x, -y, -z], this.additionalProperties);
   }
 
   public copy() {
-    return new Coords(this.x, this.y, this.additionalProperties);
+    return new Coords([this.x, this.y, this.z], this.additionalProperties);
   }
 
   public moveTo(direction: Directions): this {
@@ -144,15 +150,21 @@ export class Coords
   }
 
   public copyAndSubtract(coords: Coords): Coords {
-    return Coords.from(
-      [this.x - coords.x, this.y - coords.y],
+    return Coords.from([
+        this.x - coords.x,
+        this.y - coords.y,
+        this.z - coords.z
+      ],
       coords.additionalProperties
     );
   }
 
   public copyAndSumm(coords: Coords): Coords {
-    return Coords.from(
-      [this.x + coords.x, this.y + coords.y],
+    return Coords.from([
+        this.x + coords.x,
+        this.y + coords.y,
+        this.z - coords.z
+      ],
       coords.additionalProperties
     );
   }
@@ -178,7 +190,7 @@ export class Coords
   public setX(x: number): this {
     this.onCoordsChange(
       this,
-      Coords.from([x, this.y], this.additionalProperties)
+      Coords.from([x, this.y, this.z], this.additionalProperties)
     );
 
     return this;
@@ -187,7 +199,16 @@ export class Coords
   public setY(y: number): this {
     this.onCoordsChange(
       this,
-      Coords.from([this.x, y], this.additionalProperties)
+      Coords.from([this.x, y, this.z], this.additionalProperties)
+    );
+
+    return this;
+  }
+
+  public setZ(z: number): this {
+    this.onCoordsChange(
+      this,
+      Coords.from([this.x, this.y, z], this.additionalProperties)
     );
 
     return this;
@@ -203,6 +224,13 @@ export class Coords
   public dangerousSetY(y: number): this {
     this._y = y;
     this._1 = y;
+
+    return this;
+  }
+
+  public dangerousSetZ(z: number): this {
+    this._z = z;
+    this._2 = z;
 
     return this;
   }
@@ -251,6 +279,14 @@ export class Coords
     this.setY(value);
   }
 
+  public get 2(): number {
+    return this._2;
+  }
+
+  public set 2(value: number) {
+    this.setZ(value);
+  }
+
   public get x(): number {
     return this._x;
   }
@@ -267,12 +303,22 @@ export class Coords
     this.setY(value);
   }
 
+  public get z(): number {
+    return this._z;
+  }
+
+  public set z(value: number) {
+    this.setZ(value);
+  }
+
+
   public get [Symbol.iterator]() {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const context = this;
     return function* () {
       yield context.x;
       yield context.y;
+      yield context.z;
       return;
     };
   }
@@ -295,6 +341,7 @@ export class Coords
     this.enableTeleport();
     this.dangerousSetX(position.x);
     this.dangerousSetY(position.y);
+    this.dangerousSetZ(position.z);
 
     return this;
   }
@@ -302,6 +349,7 @@ export class Coords
   private onCoordsChange(previous: Coords, current: Coords): void {
     this.dangerousSetX(current.x);
     this.dangerousSetY(current.y);
+    this.dangerousSetZ(current.z);
     
     if (current.matrix) {
       this.setMatrix(this.matrix);

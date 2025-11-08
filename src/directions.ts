@@ -6,10 +6,10 @@ export const enum Directions {
   left  = "LEFT"
 }
 
-export const DIRECTIONS: Record<Uppercase<Directions>, [number, number]> = {
-  UP:    [  0,  1 ],
-  RIGHT: [  1,  0 ],
-  DOWN:  [  0, -1 ],
-  LEFT:  [ -1,  0 ]
+export const DIRECTIONS: Record<Uppercase<Directions>, [number, number, number]> = {
+  UP:    [  0,  1, 0 ],
+  RIGHT: [  1,  0, 0 ],
+  DOWN:  [  0, -1, 0 ],
+  LEFT:  [ -1,  0, 0 ]
 } as const;
 // prettier-ignore-end
