@@ -63,7 +63,7 @@ export class Matrix {
   private _width: number;
   private _fill: string;
 
-  private _objects: Map<string, MatrixObject> = new Map();
+  private _objects: Map<number, MatrixObject[]> = new Map();
 
   public constructor(height: number, width: number, fill: string = "#") {
     if (height <= 0) {
@@ -79,16 +79,19 @@ export class Matrix {
 
     this._fill = fill;
 
-    this._value = this.toArray();
+    this._value = this.getClearMatrix();
   }
 
   public toString() {
+    this.clear();
+    this.drawObjects();
+    
     return this._value
       .map((_, i, arr) => arr[arr.length - 1 - i].join(""))
       .join("\n");
   }
 
-  public toArray(): MatrixValue {
+  public getClearMatrix(): MatrixValue {
     return Array.from({ length: this._height }, () =>
       Array.from({ length: this._width }, () => this.fill)
     );
@@ -100,14 +103,16 @@ export class Matrix {
   }
 
   public drawObjects() {
-    const objects = this.getObjectSortedByZ();
+    const sortedObjects = this.getObjectSortedByZ();
 
-    for (const object of objects.values()) {
-      const elements = MatrixObject.resolveElementCoords(
-        object.center,
-        object.elements
-      );
-      this.drawElements(elements);
+    for (const objects of sortedObjects.values()) {
+      for (const object of objects) {
+        const elements = MatrixObject.resolveElementCoords(
+          object.center,
+          object.elements
+        );
+        this.drawElements(elements);
+      }
     }
 
     return this;
@@ -115,28 +120,29 @@ export class Matrix {
 
   public getObjectSortedByZ() {
     const entriesArray = Array.from(this._objects.entries());
-    const sortedEntries = entriesArray.sort(([_a, previous], [_b, current]) => {
-      return previous.zIndex - current.zIndex;
+    const sortedEntries = entriesArray.sort(([previous, _a], [current, _b]) => {
+      return previous - current;
     });
     
     return new Map(sortedEntries);
   }
 
-  public createOneObject(coords: ICoords, fill: string): this {
+  public createOneObject(coords: ICoords, fill: string, teleportEnabled?: boolean): MatrixObject {
     const object = new MatrixObject({
-      center: coords,
+      center: Coords.from(coords, { matrix: this, teleportEnabled }),
       defaultFill: fill,
-      elements: [[0, 0, 0]]
+      elements: [Coords.from([0, 0, 0], {
+        matrix: this, teleportEnabled
+      })]
     });
 
-    this._objects.set(object.getKey(), object);
-
-    return this;
+    this.addObject(object);
+    
+    return object;
   }
 
   public createObject(object: MatrixObject): this {
-    this._objects.set(object.getKey(), object);
-    return this;
+    return this.addObject(object);
   }
 
   public drawElement(element: Element) {
@@ -164,17 +170,6 @@ export class Matrix {
   /** @deprecated */
   public drawMany(coords: ICoords[], fill: string) {
     coords.forEach((value) => this.draw(value, fill));
-    return this;
-  }
-
-  /** @default */
-  public moveDrawElement(vector2: Vector2): this {
-    const element = this.at(vector2.current);
-
-    this.draw(vector2.current, this._fill);
-    vector2.execute();
-    this.draw(vector2.current, element);
-
     return this;
   }
 
@@ -210,7 +205,7 @@ export class Matrix {
       return y;
     }
 
-    return y < 0 ? this._width - 1 : 0;
+    return y < 0 ? this._height - 1 : 0;
   }
 
   public getTeleportPosition(coords: Coords): Coords | null {
@@ -301,9 +296,19 @@ export class Matrix {
     }
 
     this[`_${type}`] = value;
-    this._value = this.toArray();
+    this._value = this.getClearMatrix();
 
     return this;
+  }
+
+  private addObject(object: MatrixObject): this {
+    const existed = this._objects.get(object.zIndex) || [];
+    this._objects.set(object.zIndex, [...existed, object]);
+    return this;
+  }
+
+  private clear() {
+    return this.dangerousSetValue(this.getClearMatrix());
   }
 }
 

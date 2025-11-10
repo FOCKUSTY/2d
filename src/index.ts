@@ -24,20 +24,24 @@ const drawCoords2 = new Coords([-1, 1, 0], { matrix });
  * ДОБАВИТЬ ПОДДЕРЖКУ ДЛИННЫЙ СИМВОЛОВ (FILL)
  * ДОБАВИТЬ ПОДДЕРЖКУ ТЕКСТА
  * НЕ ЗАБЫТЬ СДЕЛАТЬ ПЕРЕМЕЩЕНИЕ ОБЪЕКТА
+ * 
+ * ГЛАВНАЯ ИДЕЯ МАТРИЦЫ: СДЕЛАТЬ ВИРТУАЛЬНЫЕ ЭЛЕМЕНТЫ, КОТОРЫЕ
+ * РАСПОГАЮТСЯ ПО Z КООРДИНАТЕ, ЧТОБЫ МОЖНО БЫЛО ЛЕГЧЕ ОТРИСОВЫВАТЬ
+ * ЭЛЕМЕНТЫ
  */
 
 // animationFrame.setPrerender(() => null);
 
 drawCoords.enableTeleport();
 drawCoords2.enableTeleport();
-matrix.createOneObject(drawCoords, FILL);
-// matrix.draw(drawCoords, FILL);
+const object = matrix.createOneObject(drawCoords, FILL, true);
+const object2 = matrix.createOneObject(drawCoords2, FILL, true);
 
 matrix.drawObjects();
 
 animationFrame.setRender(() => {
-  // const vector2 = new Vector2(drawCoords, Coords.summ(DIRECTIONS.RIGHT));
-  // matrix.move(vector2);
+  object.move(new Vector2(DIRECTIONS.RIGHT, DIRECTIONS.UP));
+  object2.move(new Vector2(DIRECTIONS.LEFT, DIRECTIONS.DOWN));
 
   return matrix.toString();
 });

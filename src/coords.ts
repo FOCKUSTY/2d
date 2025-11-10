@@ -1,5 +1,6 @@
 import { DIRECTIONS, Directions } from "./directions";
 import Matrix from "./matrix";
+import Vector2 from "./vector2";
 
 export interface ObjectCoords {
   x: number;
@@ -136,6 +137,10 @@ export class Coords implements Partial<ObjectCoords> {
 
   public toLeft(): this {
     return this.moveTo(Directions.left);
+  }
+
+  public move(vector2: Vector2): this {
+    return this.set(vector2.execute(this));
   }
 
   public set(coords: Coords): this {

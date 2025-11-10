@@ -1,23 +1,16 @@
-import { ArrayCoords, Coords, ObjectCoords } from "./coords";
+import { Coords, ICoords } from "./coords";
 
 export class Vector2 {
-  private _current: Coords;
   private _move_to: Coords;
 
   public constructor(
-    current: Coords,
-    moveTo: Coords | ArrayCoords | ObjectCoords
+    ...moveTo: ICoords[]
   ) {
-    this._current = current;
-    this._move_to = moveTo instanceof Coords ? moveTo : Coords.from(moveTo);
+    this._move_to = Coords.from(Coords.summ(...moveTo));
   }
 
-  public execute() {
-    return this._current.summ(this._move_to);
-  }
-
-  public get current(): Coords {
-    return this._current;
+  public execute(coords: ICoords) {
+    return Coords.from(coords).summ(this._move_to);
   }
 
   public get moveTo(): Coords {

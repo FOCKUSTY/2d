@@ -1,5 +1,9 @@
 import Coords, { ArrayCoords, ICoords } from "./coords";
+import Counter from "./counter";
 import Matrix, { IMatrix } from "./matrix";
+import Vector2 from "./vector2";
+
+const idCounter = new Counter();
 
 export interface IElement {
   coords: Coords;
@@ -7,10 +11,23 @@ export interface IElement {
 }
 
 export class Element {
+  private _coords: Coords;
+
   public constructor(
-    public readonly coords: Coords,
+    coords: ICoords,
     public readonly fill: string
-  ) {}
+  ) {
+    this._coords = Coords.from(coords);
+  }
+
+  public move(vector2: Vector2) {
+    this._coords = vector2.execute(this.coords);
+    return this;
+  }
+
+  public get coords(): Coords {
+    return this._coords;
+  }
 }
 
 export type Fill = {
@@ -118,10 +135,8 @@ export class MatrixObject {
 
     const elements = elementsWithoutOffset.map((element) => {
       const coords = element.coords.subtract(center);
-      return {
-        coords,
-        fill: element.fill
-      };
+      
+      return new Element(coords, element.fill)
     });
 
     return {
@@ -154,11 +169,8 @@ export class MatrixObject {
 
   public static resolveElementCoords(center: Coords, elements: Element[]) {
     return elements.map((element) => {
-      const coords = element.coords.summ(center);
-      return {
-        coords,
-        fill: element.fill
-      };
+      const coords = element.coords.copyAndSumm(center);
+      return new Element(coords, element.fill);
     });
   }
 
@@ -166,6 +178,7 @@ export class MatrixObject {
   private _elements: Element[];
   private _default_fill: string;
   private _z_index: number;
+  public readonly id: number;
 
   /**
    * @param center начало отчёта элементов
@@ -196,11 +209,12 @@ export class MatrixObject {
     this._default_fill = defaultFill;
     this._elements = MatrixObject.resolvePartialElements(defaultFill, elements);
     this._z_index = zIndex;
+
+    this.id = idCounter.execute();
   }
 
-  public getKey() {
-    const { x, y } = this.center;
-    return `${x}-${y}-${this._z_index}`;
+  public move(vector2: Vector2): Coords {
+    return this._center.move(vector2);
   }
 
   public transformElements(callback: (elements: Element[]) => Element[]): this {
