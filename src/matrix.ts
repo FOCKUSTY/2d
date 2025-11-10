@@ -85,7 +85,7 @@ export class Matrix {
   public toString() {
     this.clear();
     this.drawObjects();
-    
+
     return this._value
       .map((_, i, arr) => arr[arr.length - 1 - i].join(""))
       .join("\n");
@@ -123,21 +123,28 @@ export class Matrix {
     const sortedEntries = entriesArray.sort(([previous, _a], [current, _b]) => {
       return previous - current;
     });
-    
+
     return new Map(sortedEntries);
   }
 
-  public createOneObject(coords: ICoords, fill: string, teleportEnabled?: boolean): MatrixObject {
+  public createOneObject(
+    coords: ICoords,
+    fill: string,
+    teleportEnabled?: boolean
+  ): MatrixObject {
     const object = new MatrixObject({
       center: Coords.from(coords, { matrix: this, teleportEnabled }),
       defaultFill: fill,
-      elements: [Coords.from([0, 0, 0], {
-        matrix: this, teleportEnabled
-      })]
+      elements: [
+        Coords.from([0, 0, 0], {
+          matrix: this,
+          teleportEnabled
+        })
+      ]
     });
 
     this.addObject(object);
-    
+
     return object;
   }
 

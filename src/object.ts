@@ -135,8 +135,8 @@ export class MatrixObject {
 
     const elements = elementsWithoutOffset.map((element) => {
       const coords = element.coords.subtract(center);
-      
-      return new Element(coords, element.fill)
+
+      return new Element(coords, element.fill);
     });
 
     return {
