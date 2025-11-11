@@ -41,30 +41,32 @@ const object2 = matrix.createOneObject(drawCoords2, FILL, true);
 
 matrix.drawObjects();
 
-animationFrame.render(-1);
-
 animationFrame.addEventListener("keypress", (data, key) => {
   const name = key.name?.toUpperCase();
   if (!name) {
     return;
   }
-  
-  const direction = (<Record<string, [number, number, number]>>DIRECTIONS)[name];
+
+  const direction = (<Record<string, [number, number, number]>>DIRECTIONS)[
+    name
+  ];
   if (!direction) {
     return;
   }
 
   object.move(new Vector2(direction));
-})
+});
 
 animationFrame.setRender(() => {
   animationFrame.prerender();
-  
+
   // object.move(new Vector2(DIRECTIONS.RIGHT, DIRECTIONS.UP));
   object2.move(new Vector2(DIRECTIONS.LEFT, DIRECTIONS.DOWN));
 
   return matrix.toString();
 });
+
+animationFrame.render(-1);
 
 const screen = new Screen(
   matrix,

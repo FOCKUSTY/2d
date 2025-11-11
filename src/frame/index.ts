@@ -1,4 +1,9 @@
-import type { FrameEvent, FrameEventCallback, FrameEvents, FrameEventsInitialiserType } from "./types.frame";
+import type {
+  FrameEvent,
+  FrameEventCallback,
+  FrameEvents,
+  FrameEventsInitialiserType
+} from "./types.frame";
 
 import Counter from "../counter";
 
@@ -6,7 +11,10 @@ const SECOND = 1000;
 
 export class AnimationFrame {
   public static readonly events: FrameEventsInitialiserType = {
-    "keypress": (callback: FrameEventCallback<"keypress">, type: "add"|"remove") => {
+    "keypress": (
+      callback: FrameEventCallback<"keypress">,
+      type: "add" | "remove"
+    ) => {
       if (type === "add") {
         process.stdin.addListener("keypress", callback);
         return;
@@ -75,20 +83,26 @@ export class AnimationFrame {
     return render;
   }
 
-  public addEventListener<T extends FrameEvent>(event: T, callback: FrameEventCallback<T>) {
+  public addEventListener<T extends FrameEvent>(
+    event: T,
+    callback: FrameEventCallback<T>
+  ) {
     this._events[event] = callback;
     AnimationFrame.events[event](callback, "add");
-  };
+  }
 
-  public removeEventListener<T extends FrameEvent>(event: T, callback: FrameEventCallback<T>) {
+  public removeEventListener<T extends FrameEvent>(
+    event: T,
+    callback: FrameEventCallback<T>
+  ) {
     this._events[event] = undefined;
     AnimationFrame.events[event](callback, "remove");
-  };
-  
+  }
+
   public prerender() {
     console.clear();
   }
-  
+
   public setPrerender(prerender: () => void) {
     this.prerender = prerender;
   }

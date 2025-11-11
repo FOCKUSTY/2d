@@ -1,22 +1,28 @@
 export type FrameEvent = "keypress";
 // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-export type Null = void|null|undefined;
+export type Null = void | null | undefined;
 export type MaybePromise<T> = T | Promise<T>;
 
 export type FrameEvents<T = MaybePromise<Null>> = {
-  "keypress": (data: string, key: {
-    sequence: string,
-    name?: string,
-    ctrl: boolean,
-    meta: boolean,
-    shift: boolean
-  }) => T
+  "keypress": (
+    data: string,
+    key: {
+      sequence: string;
+      name?: string;
+      ctrl: boolean;
+      meta: boolean;
+      shift: boolean;
+    }
+  ) => T;
 };
 
 export type FrameEventType = "add" | "remove";
 
 export type FrameEventsInitialiserType<T = MaybePromise<Null>> = {
-  [P in keyof FrameEvents]: (callback: FrameEvents[P], type: FrameEventType) => T;
-}
+  [P in keyof FrameEvents]: (
+    callback: FrameEvents[P],
+    type: FrameEventType
+  ) => T;
+};
 
 export type FrameEventCallback<T extends FrameEvent> = FrameEvents[T];
