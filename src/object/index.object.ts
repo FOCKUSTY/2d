@@ -6,13 +6,14 @@ import { Vector2 } from "@coords";
 
 import { Matrix } from "@screen";
 import { Counter } from "@utils";
+import {
+  Config,
+  ElementOrCoords,
+  Fill,
+  MartixObjectConstructorParameters
+} from "./types.object";
 
 const idCounter = new Counter();
-
-export interface IElement {
-  coords: Coords;
-  fill: string;
-}
 
 export class Element {
   private _coords: Coords;
@@ -34,29 +35,10 @@ export class Element {
   }
 }
 
-export type Fill = {
-  center: string;
-  elements: string[];
-  void: string;
-  air: string;
-};
-
-export type Config = {
-  centerIsElement: boolean;
-  centerFillReplaceString: string;
-};
-
-export type MartixObjectConstructorParameters = {
-  center: ICoords;
-  defaultFill: string;
-  zIndex?: number;
-  elements?: (Element | ICoords)[];
-};
-
 export class MatrixObject {
   public static resolvePartialElements(
     fill: string,
-    elements?: (ICoords | Element)[]
+    elements?: ElementOrCoords[]
   ): Element[] {
     if (!elements) {
       return [];
