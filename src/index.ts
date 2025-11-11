@@ -1,5 +1,9 @@
 import "fock-logger/config";
 import { Colors } from "fock-logger";
+import { emitKeypressEvents } from "readline";
+
+emitKeypressEvents(process.stdin);
+process.stdin.setRawMode(true);
 
 import { DIRECTIONS } from "./directions";
 
@@ -10,27 +14,36 @@ import Vector2 from "./vector2";
 
 import Screen from "./screen";
 import MatrixObject from "./object";
+import Keyboard from "./keyboard";
 
 const VOID = Colors.bgBrightCyan + " " + Colors.reset;
 const FILL = Colors.bgMagenta + " " + Colors.reset;
 
 const matrix = new Matrix(5, 30, VOID);
-const animationFrame = new AnimationFrame(30);
+const animationFrame = new AnimationFrame(5000);
 
 const drawCoords = new Coords([0, 0, 0], { matrix });
 const drawCoords2 = new Coords([-1, 1, 0], { matrix });
 
+/* process.stdin.on('keypress', (str, key) => {
+  animationFrame.render(-1);
+
+  if (key.shift === true && Keyboard.Q) {
+    return process.exit();
+  }
+}); */
+
 /**
  * ДОБАВИТЬ ПОДДЕРЖКУ ДЛИННЫЙ СИМВОЛОВ (FILL)
  * ДОБАВИТЬ ПОДДЕРЖКУ ТЕКСТА
- * НЕ ЗАБЫТЬ СДЕЛАТЬ ПЕРЕМЕЩЕНИЕ ОБЪЕКТА
  *
+ * НЕ ЗАБЫТЬ СДЕЛАТЬ ПЕРЕМЕЩЕНИЕ ОБЪЕКТА
  * ГЛАВНАЯ ИДЕЯ МАТРИЦЫ: СДЕЛАТЬ ВИРТУАЛЬНЫЕ ЭЛЕМЕНТЫ, КОТОРЫЕ
  * РАСПОГАЮТСЯ ПО Z КООРДИНАТЕ, ЧТОБЫ МОЖНО БЫЛО ЛЕГЧЕ ОТРИСОВЫВАТЬ
  * ЭЛЕМЕНТЫ
  */
 
-// animationFrame.setPrerender(() => null);
+animationFrame.setPrerender(() => null);
 
 drawCoords.enableTeleport();
 drawCoords2.enableTeleport();
