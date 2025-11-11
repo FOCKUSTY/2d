@@ -99,6 +99,8 @@ export class Matrix {
           object.center,
           object.elements
         );
+        console.log({center: object.center.x});
+        console.log({elements: elements.map(e => e.coords.x)});
         this.drawElements(elements);
       }
     }
