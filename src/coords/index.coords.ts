@@ -1,4 +1,9 @@
-import type { AdditionalCoordsProperties, ArrayCoords, ICoords, ObjectCoords } from "./types.coords";
+import type {
+  AdditionalCoordsProperties,
+  ArrayCoords,
+  ICoords,
+  ObjectCoords
+} from "./types.coords";
 import { DIRECTIONS, Directions } from "@utils";
 
 import { Vector2 } from "./vector2.coords";
