@@ -29,7 +29,7 @@ const drawCoords2 = new Coords([-1, 1, 0], { matrix });
  * ГЛАВНАЯ ИДЕЯ МАТРИЦЫ: СДЕЛАТЬ ВИРТУАЛЬНЫЕ ЭЛЕМЕНТЫ, КОТОРЫЕ
  * РАСПОГАЮТСЯ ПО Z КООРДИНАТЕ, ЧТОБЫ МОЖНО БЫЛО ЛЕГЧЕ ОТРИСОВЫВАТЬ
  * ЭЛЕМЕНТЫ
- * 
+ *
  * ПЕРЕРАБОТАТЬ СИСТЕМУ ЭЛЕМЕНТОВ В ОБЪЕКТЕ
  * ВМЕСТО ТОГО, ЧТОБЫ КАЖДЫЙ РАЗ СЧИТАТЬ OFFSET, МЫ БУДЕМ СЧИТАТЬ ЕГО ОДИН РАЗ
  */
@@ -43,27 +43,33 @@ const object = matrix.createOneObject(drawCoords, FILL, true);
 const object2 = matrix.createOneObject(drawCoords2, FILL, true);
 const object3 = MatrixObject.createObjectByMatrix({
   matrix: [
-    "+привет".split("").map(v => Colors.red + Colors.bgBrightCyan + v + Colors.reset),
+    "+привет"
+      .split("")
+      .map((v) => Colors.red + Colors.bgBrightCyan + v + Colors.reset)
   ],
   fill: {
     air: VOID,
     void: VOID,
     center: Colors.red + Colors.bgBrightCyan + "+" + Colors.reset,
     defaultFill: VOID,
-    elements: "привет".split("").map(v => Colors.red + Colors.bgBrightCyan + v + Colors.reset)
+    elements: "привет"
+      .split("")
+      .map((v) => Colors.red + Colors.bgBrightCyan + v + Colors.reset)
   },
   config: {
-    centerIsElement: false,
+    centerIsElement: false
   }
 });
 
 object3.center.setMatrix(matrix);
 object3.center.enableTeleport();
-object.transformElements(elements => elements.map(element => {
-  element.coords.setMatrix(matrix);
-  element.coords.enableTeleport();
-  return element;
-}));
+object.transformElements((elements) =>
+  elements.map((element) => {
+    element.coords.setMatrix(matrix);
+    element.coords.enableTeleport();
+    return element;
+  })
+);
 matrix.createObject(object3);
 
 matrix.drawObjects();
