@@ -1,8 +1,21 @@
-import Counter from "./counter";
+import type { FrameEvent, FrameEventCallback, FrameEvents, FrameEventsInitialiserType } from "./types.frame";
+
+import Counter from "../counter";
 
 const SECOND = 1000;
 
 export class AnimationFrame {
+  public static readonly events: FrameEventsInitialiserType = {
+    "keypress": (callback: FrameEventCallback<"keypress">, type: "add"|"remove") => {
+      if (type === "add") {
+        process.stdin.addListener("keypress", callback);
+        return;
+      }
+
+      process.stdin.removeListener("keypress", callback);
+    }
+  } as const;
+
   /**
    * Конвертирует частоту кадров (FPS) в длительность одного кадра в секундах.
    *
@@ -30,6 +43,8 @@ export class AnimationFrame {
   private _interval: NodeJS.Timeout | null = null;
   private readonly _counter: Counter;
 
+  private readonly _events: Partial<FrameEvents> = {};
+
   public constructor(public readonly millisecondsPerFrame: number = 20) {
     this._counter = new Counter();
   }
@@ -42,6 +57,7 @@ export class AnimationFrame {
   }
 
   public render(elapsedFrames: number): void {
+    this.prerender();
     console.log(1, "прошло", elapsedFrames);
   }
 
@@ -59,12 +75,22 @@ export class AnimationFrame {
     return render;
   }
 
+  public addEventListener<T extends FrameEvent>(event: T, callback: FrameEventCallback<T>) {
+    this._events[event] = callback;
+    AnimationFrame.events[event](callback, "add");
+  };
+
+  public removeEventListener<T extends FrameEvent>(event: T, callback: FrameEventCallback<T>) {
+    this._events[event] = undefined;
+    AnimationFrame.events[event](callback, "remove");
+  };
+  
+  public prerender() {
+    console.clear();
+  }
+  
   public setPrerender(prerender: () => void) {
     this.prerender = prerender;
-  }
-
-  private prerender() {
-    console.clear();
   }
 
   private setInterval(callback: (elapsedFrames: number) => void) {

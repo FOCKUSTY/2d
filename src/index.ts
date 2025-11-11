@@ -13,25 +13,16 @@ import Matrix from "./matrix";
 import Vector2 from "./vector2";
 
 import Screen from "./screen";
-import MatrixObject from "./object";
 import Keyboard from "./keyboard";
 
 const VOID = Colors.bgBrightCyan + " " + Colors.reset;
 const FILL = Colors.bgMagenta + " " + Colors.reset;
 
 const matrix = new Matrix(5, 30, VOID);
-const animationFrame = new AnimationFrame(5000);
+const animationFrame = new AnimationFrame(30);
 
 const drawCoords = new Coords([0, 0, 0], { matrix });
 const drawCoords2 = new Coords([-1, 1, 0], { matrix });
-
-/* process.stdin.on('keypress', (str, key) => {
-  animationFrame.render(-1);
-
-  if (key.shift === true && Keyboard.Q) {
-    return process.exit();
-  }
-}); */
 
 /**
  * ДОБАВИТЬ ПОДДЕРЖКУ ДЛИННЫЙ СИМВОЛОВ (FILL)
@@ -43,8 +34,6 @@ const drawCoords2 = new Coords([-1, 1, 0], { matrix });
  * ЭЛЕМЕНТЫ
  */
 
-animationFrame.setPrerender(() => null);
-
 drawCoords.enableTeleport();
 drawCoords2.enableTeleport();
 const object = matrix.createOneObject(drawCoords, FILL, true);
@@ -52,8 +41,26 @@ const object2 = matrix.createOneObject(drawCoords2, FILL, true);
 
 matrix.drawObjects();
 
+animationFrame.render(-1);
+
+animationFrame.addEventListener("keypress", (data, key) => {
+  const name = key.name?.toUpperCase();
+  if (!name) {
+    return;
+  }
+  
+  const direction = (<Record<string, [number, number, number]>>DIRECTIONS)[name];
+  if (!direction) {
+    return;
+  }
+
+  object.move(new Vector2(direction));
+})
+
 animationFrame.setRender(() => {
-  object.move(new Vector2(DIRECTIONS.RIGHT, DIRECTIONS.UP));
+  animationFrame.prerender();
+  
+  // object.move(new Vector2(DIRECTIONS.RIGHT, DIRECTIONS.UP));
   object2.move(new Vector2(DIRECTIONS.LEFT, DIRECTIONS.DOWN));
 
   return matrix.toString();
