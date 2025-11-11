@@ -1,16 +1,14 @@
 import type { ICoords } from "@coords";
-import Coords from "@coords";
+import { Coords } from "@coords";
+import ERRORS from "@errors/index.errors";
 
-import MatrixObject, { Element } from "@object";
-
-const NOT_POSITIVE_VALUE_ERROR =
-  "Данное значение не может быть ниже нуля или равняться нулю";
+import { MatrixObject, Element } from "@object";
 
 export type MatrixValue = string[][];
 
-export type MatrixSize = {
-  height: number;
-  width: number;
+export interface MatrixSize {
+  readonly height: number;
+  readonly width: number;
 };
 
 export type IMatrix = Matrix | MatrixValue;
@@ -67,11 +65,11 @@ export class Matrix {
 
   public constructor(height: number, width: number, fill: string = "#") {
     if (height <= 0) {
-      throw new Error(NOT_POSITIVE_VALUE_ERROR);
+      throw new Error(ERRORS.NOT_POSITIVE_VALUE_ERROR);
     }
 
     if (width <= 0) {
-      throw new Error(NOT_POSITIVE_VALUE_ERROR);
+      throw new Error(ERRORS.NOT_POSITIVE_VALUE_ERROR);
     }
 
     this._height = height;
@@ -299,7 +297,7 @@ export class Matrix {
 
   private setValue(type: "height" | "width", value: number) {
     if (value <= 0) {
-      throw new Error(NOT_POSITIVE_VALUE_ERROR);
+      throw new Error(ERRORS.NOT_POSITIVE_VALUE_ERROR);
     }
 
     this[`_${type}`] = value;

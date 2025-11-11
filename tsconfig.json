@@ -18,12 +18,14 @@
       "@screen/*": ["src/screen/*"],
       "@object/*": ["./src/object/*"],
       "@coords/*": ["./src/coords/*"],
+      "@errors/*": ["./src/errors/*"],
 
       "@frame": ["./src/frame"],
       "@utils": ["./src/utils"],
       "@screen": ["src/screen"],
       "@object": ["./src/object"],
       "@coords": ["./src/coords"],
+      "@errors": ["./src/errors"],
     }
   },
   "include": ["./**/*.ts"],
