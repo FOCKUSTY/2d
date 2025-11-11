@@ -1,7 +1,11 @@
-import Coords, { ArrayCoords, ICoords } from "./coords";
-import Counter from "./counter";
-import Matrix, { IMatrix } from "./matrix";
-import Vector2 from "./vector2";
+import type { ICoords } from "@coords";
+import type { IMatrix } from "@screen";
+
+import { Coords } from "@coords";
+import { Vector2 } from "@coords";
+
+import { Matrix } from "@screen";
+import { Counter } from "@utils";
 
 const idCounter = new Counter();
 

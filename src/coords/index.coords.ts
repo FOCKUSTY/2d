@@ -1,6 +1,7 @@
-import { DIRECTIONS, Directions } from "./directions";
-import Matrix from "./matrix";
-import Vector2 from "./vector2";
+import { DIRECTIONS, Directions } from "@utils";
+
+import { Vector2 } from "./vector2.coords";
+import { Matrix } from "@screen";
 
 export interface ObjectCoords {
   x: number;

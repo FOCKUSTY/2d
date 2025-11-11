@@ -2,18 +2,14 @@ import "fock-logger/config";
 import { Colors } from "fock-logger";
 import { emitKeypressEvents } from "readline";
 
-emitKeypressEvents(process.stdin);
-process.stdin.setRawMode(true);
+import { Coords } from "@coords";
+import { Vector2 } from "@coords";
 
-import { DIRECTIONS } from "./directions";
+import { AnimationFrame } from "@frame";
+import { Matrix } from "@screen";
+import { Screen } from "@screen";
 
-import Coords from "./coords";
-import AnimationFrame from "./frame";
-import Matrix from "./matrix";
-import Vector2 from "./vector2";
-
-import Screen from "./screen";
-import Keyboard from "./keyboard";
+import { DIRECTIONS } from "@utils";
 
 const VOID = Colors.bgBrightCyan + " " + Colors.reset;
 const FILL = Colors.bgMagenta + " " + Colors.reset;
@@ -33,6 +29,9 @@ const drawCoords2 = new Coords([-1, 1, 0], { matrix });
  * РАСПОГАЮТСЯ ПО Z КООРДИНАТЕ, ЧТОБЫ МОЖНО БЫЛО ЛЕГЧЕ ОТРИСОВЫВАТЬ
  * ЭЛЕМЕНТЫ
  */
+
+emitKeypressEvents(process.stdin);
+process.stdin.setRawMode(true);
 
 drawCoords.enableTeleport();
 drawCoords2.enableTeleport();

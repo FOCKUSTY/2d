@@ -1,4 +1,4 @@
-import { Coords, ICoords } from "./coords";
+import { Coords, ICoords } from "./index.coords";
 
 export class Vector2 {
   private _move_to: Coords;

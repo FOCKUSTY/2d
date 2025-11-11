@@ -12,7 +12,19 @@
     "strictNullChecks": true,
     "skipLibCheck": true,
     "baseUrl": "./",
-    "paths": {}
+    "paths": {
+      "@frame/*": ["./src/frame/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@screen/*": ["src/screen/*"],
+      "@object/*": ["./src/object/*"],
+      "@coords/*": ["./src/coords/*"],
+
+      "@frame": ["./src/frame"],
+      "@utils": ["./src/utils"],
+      "@screen": ["src/screen"],
+      "@object": ["./src/object"],
+      "@coords": ["./src/coords"],
+    }
   },
   "include": ["./**/*.ts"],
   "exclude": ["node_modules"],

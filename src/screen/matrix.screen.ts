@@ -1,7 +1,7 @@
-import Coords from "./coords";
-import type { ICoords } from "./coords";
-import MatrixObject, { Element } from "./object";
-import Vector2 from "./vector2";
+import type { ICoords } from "@coords";
+import Coords from "@coords";
+
+import MatrixObject, { Element } from "@object";
 
 const NOT_POSITIVE_VALUE_ERROR =
   "Данное значение не может быть ниже нуля или равняться нулю";

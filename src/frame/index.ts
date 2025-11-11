@@ -5,7 +5,7 @@ import type {
   FrameEventsInitialiserType
 } from "./types.frame";
 
-import Counter from "../counter";
+import Counter from "../utils/counter.utils";
 
 const SECOND = 1000;
 
