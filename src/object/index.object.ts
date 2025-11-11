@@ -1,17 +1,15 @@
-import type { ICoords } from "@coords";
+import type { ICoords, Vector2 } from "@coords";
 import type { IMatrix } from "@screen";
-
-import { Coords } from "@coords";
-import { Vector2 } from "@coords";
-
-import { Matrix } from "@screen";
-import { Counter } from "@utils";
-import {
+import type {
   Config,
   ElementOrCoords,
   Fill,
   MartixObjectConstructorParameters
 } from "./types.object";
+
+import { Coords } from "@coords";
+import { Matrix } from "@screen";
+import { Counter } from "@utils";
 
 const idCounter = new Counter();
 

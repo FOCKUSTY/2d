@@ -1,36 +1,27 @@
+import type { IMatrix, MatrixSize, MatrixValue } from "./types.screen";
 import type { ICoords } from "@coords";
+import type { Element } from "@object";
+
 import { Coords } from "@coords";
-import ERRORS from "@errors/index.errors";
+import { MatrixObject } from "@object";
 
-import { MatrixObject, Element } from "@object";
-
-export type MatrixValue = string[][];
-
-export interface MatrixSize {
-  readonly height: number;
-  readonly width: number;
-}
-
-export type IMatrix = Matrix | MatrixValue;
+import { ERRORS } from "@errors";
 
 export class Matrix {
-  public static validateMatrixValue(value: MatrixValue): null | MatrixSize {
+  public static validateMatrixValue(value: MatrixValue): MatrixSize {
     const height = value.length;
-
     if (height <= 0) {
-      return null;
+      throw new Error(ERRORS.NOT_POSITIVE_VALUE_ERROR);
     }
 
     const width = value[0].length;
-
     if (width <= 0) {
-      return null;
+      throw new Error(ERRORS.NOT_POSITIVE_VALUE_ERROR);
     }
 
     const lengthSame = value.every((element) => element.length === width);
-
     if (!lengthSame) {
-      return null;
+      throw new Error(ERRORS.NOT_EQUALS_ARRAY_LENGTH);
     }
 
     return {
@@ -45,9 +36,8 @@ export class Matrix {
     }
 
     const size = this.validateMatrixValue(value);
-
     if (!size) {
-      throw new Error("Bad matrix");
+      throw new Error(ERRORS.BAD_VALIDATION);
     }
 
     const matrix = new Matrix(size.height, size.width, fill);

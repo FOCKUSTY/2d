@@ -1,5 +1,5 @@
-import AnimationFrame from "../frame";
-import Matrix from "./matrix.screen";
+import type { Matrix } from "./matrix.screen";
+import { AnimationFrame } from "@frame";
 
 export interface AdditionProperties {
   fill: {

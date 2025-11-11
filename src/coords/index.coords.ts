@@ -1,22 +1,9 @@
+import type { AdditionalCoordsProperties, ArrayCoords, ICoords, ObjectCoords } from "./types.coords";
 import { DIRECTIONS, Directions } from "@utils";
 
 import { Vector2 } from "./vector2.coords";
 import { Matrix } from "@screen";
-
-export interface ObjectCoords {
-  x: number;
-  y: number;
-  z: number;
-}
-
-export interface AdditionalCoordsProperties {
-  matrix: Matrix;
-  teleportEnabled: boolean;
-}
-
-export type ArrayCoords = [number, number, number];
-
-export type ICoords = ObjectCoords | ArrayCoords | Coords;
+import ERRORS from "@errors/index.errors";
 
 export class Coords implements Partial<ObjectCoords> {
   public static from(
@@ -41,13 +28,10 @@ export class Coords implements Partial<ObjectCoords> {
       : coords;
   }
 
-  public static summ(...coords: (Coords | ObjectCoords | ArrayCoords)[]) {
+  public static summ(...coords: ICoords[]) {
     return coords.reduce((previous, current) => {
-      const previousCoords =
-        previous instanceof Coords ? previous : Coords.from(previous);
-
-      const currentCoords =
-        current instanceof Coords ? current : Coords.from(current);
+      const previousCoords = Coords.from(previous);
+      const currentCoords = Coords.from(current);
 
       return previousCoords.summ(currentCoords);
     });
@@ -64,7 +48,7 @@ export class Coords implements Partial<ObjectCoords> {
   private _teleport_enabled: boolean = false;
 
   public constructor(
-    coords: ArrayCoords | ObjectCoords,
+    coords: ICoords,
     additional?: Partial<AdditionalCoordsProperties>
   ) {
     const { x, y, z } = Coords.getXYZ(coords);
@@ -318,7 +302,7 @@ export class Coords implements Partial<ObjectCoords> {
 
     const matrix = coords.matrix || this.matrix;
     if (!matrix) {
-      throw new Error("Matrix not found, but teleport enabled");
+      throw new Error(ERRORS.UNDEFINED_MATRIX_AND_ENABLED_TELEPORT);
     }
 
     const position = matrix.getTeleportPosition(coords);
