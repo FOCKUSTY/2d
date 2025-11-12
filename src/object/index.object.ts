@@ -191,13 +191,14 @@ export class MatrixObject {
   }: MartixObjectConstructorParameters) {
     this._center = Coords.from(center);
     this._default_fill = defaultFill;
-    this._elements = MatrixObject.resolvePartialElements(defaultFill, elements);
+    this._elements = MatrixObject.resolveElementCoords(this._center, MatrixObject.resolvePartialElements(defaultFill, elements));
     this._z_index = zIndex;
 
     this.id = idCounter.execute();
   }
 
   public move(vector2: Vector2): Coords {
+    this._elements.forEach(element => element.move(vector2));
     return this._center.move(vector2);
   }
 

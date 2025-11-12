@@ -95,13 +95,7 @@ export class Matrix {
 
     for (const objects of sortedObjects.values()) {
       for (const object of objects) {
-        const elements = MatrixObject.resolveElementCoords(
-          object.center,
-          object.elements
-        );
-        console.log({ center: object.center.x });
-        console.log({ elements: elements.map((e) => e.coords.x) });
-        this.drawElements(elements);
+        this.drawElements(object.elements);
       }
     }
 

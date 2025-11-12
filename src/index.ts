@@ -16,7 +16,7 @@ const VOID = Colors.bgBrightCyan + " " + Colors.reset;
 const FILL = Colors.bgMagenta + " " + Colors.reset;
 
 const matrix = new Matrix(5, 30, VOID);
-const animationFrame = new AnimationFrame(500);
+const animationFrame = new AnimationFrame(100);
 
 const drawCoords = new Coords([0, 0, 0], { matrix });
 const drawCoords2 = new Coords([-1, 1, 0], { matrix });
@@ -63,7 +63,7 @@ const object3 = MatrixObject.createObjectByMatrix({
 
 object3.center.setMatrix(matrix);
 object3.center.enableTeleport();
-object.transformElements((elements) =>
+object3.transformElements((elements) =>
   elements.map((element) => {
     element.coords.setMatrix(matrix);
     element.coords.enableTeleport();
